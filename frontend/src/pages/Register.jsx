@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -29,13 +29,44 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignInSide() {
+  const [email,setEmail] =useState('');
+  const[userName,setUsername] = useState('');
+  const [password,setPassword] = useState('');
+  const [confirmPassword,setConfirmPassword]=useState('');
+  const [errors, setErrors] = useState({});
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const newErrors = {};
+    if(!data.get('name')){
+      newErrors.name = "User name is required"
+    }
+    if(!data.get('email')){
+      newErrors.email = "Email is required"
+    }
+    if(!data.get('password')){
+      newErrors.password = "Password is required"
+    }
+    if(!data.get('conPassword')){
+      newErrors.conPassword = "Confirm your password"
+    }
+    if(data.get('password').length<8){
+      newErrors.password = "Password must be atleast eight characters"
+    }
+    if(data.get('password') !== data.get('conPassword')){
+      newErrors.conPassword = "Passwords do not match"
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      console.log({
+        email: data.get('email'),
+        userName: data.get('name'),
+        password: data.get('password'),
+
+      });
+    }
+    
   };
 
   return (
@@ -83,6 +114,8 @@ export default function SignInSide() {
                 name="name"
                 autoComplete="name"
                 autoFocus
+                helperText={errors.name}
+                error={!!errors.name}
               />
               <TextField
                 margin="normal"
@@ -92,7 +125,8 @@ export default function SignInSide() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-                autoFocus
+                helperText={errors.email}
+                error={!!errors.email}
               />
               <TextField
                 margin="normal"
@@ -103,16 +137,20 @@ export default function SignInSide() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                helperText={errors.password}
+                error={!!errors.password}
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="confirm password"
+                name="conPassword"
                 label="Confirm password"
                 type="password"
-                id="password"
+                id="conPassword"
                 autoComplete="current-password"
+                helperText={errors.conPassword}
+                error={!!errors.conPassword}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
@@ -124,7 +162,7 @@ export default function SignInSide() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                Sign Up
               </Button>
               <Grid container>
                 <Grid item xs>
@@ -133,8 +171,8 @@ export default function SignInSide() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
-                    {"Don't have an account? Sign Up"}
+                  <Link href="/signin" variant="body2">
+                    {"Already have an account? Sign In"}
                   </Link>
                 </Grid>
               </Grid>
