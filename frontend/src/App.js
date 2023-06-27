@@ -3,16 +3,20 @@ import './App.css';
 import {BrowserRouter as Router,Route,Routes } from "react-router-dom";
 import SignIn from "./pages/SignIn.jsx"
 import Register from "./pages/Register.jsx"
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 
-function App() {
+const RouterDOM = () => {
   return (
     <Router>
         <Routes>
-        <Route path="/" element={<SignIn/>}/>
-        <Route path="/signup" element={<Register/>}/>
+			<Route path="/signin" element={<SignIn/>}/>
+			<Route path="/signup" element={<Register/>}/>
+			<Route path="/navbar" element={<Navbar/>}/>
+      <Route path="/footer" element={<Footer/>}/>
       </Routes>
       </Router>
   );
-}
+  }
 
-export default App;
+  export default RouterDOM;
