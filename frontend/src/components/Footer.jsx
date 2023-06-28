@@ -1,11 +1,5 @@
 import React from "react";
 import styles from "./componentStyles/footer.module.css";
-import Link from '@mui/material/Link';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import {
     Security,
     Info,
@@ -16,7 +10,18 @@ import {
     Payment
 } from "@mui/icons-material";
 import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
+import PaymentMethods from '../public/icons_payment1.jpg';
+import styled from "styled-components";
+
+
+const ImgContainer = styled.div`
+  height: 100%;
+  flex: 1;
+`;
+
+const Image = styled.img`
+  height: 90%;
+`;
 
 const Footer = () => {
     return (
@@ -73,13 +78,15 @@ const Footer = () => {
                 </div>
             </footer>
             <div className={styles['footer-bottom']}>
-                <div className={styles['footer-bottom-section']}>
+                <div className={styles['footer-bottom-section1']}>
                     <p>&copy; 2023 MEDHIVE.Inc</p>
                 </div>
-                <div className={styles['footer-bottom-section']}>
-                    <Payment />
+                <div className={styles['footer-bottom-section']}>             
+                            <ImgContainer>
+                        <Image src={PaymentMethods} />
+                    </ImgContainer>
                 </div>
-                <div className={styles['footer-bottom-section']}>
+                <div className={styles['footer-bottom-section2']}>
                     <a href="#top">Scroll Up</a>
                 </div>
             </div>
