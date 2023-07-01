@@ -5,7 +5,8 @@ import SignIn from "./pages/SignIn.jsx"
 import Register from "./pages/Register.jsx"
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Home from './pages/Home'
+import Home from './pages/Home';
+import Cart from './pages/ShoppingCart'
 
 const RouterDOM = () => {
   return (
@@ -14,8 +15,8 @@ const RouterDOM = () => {
         <Route path="/home" element={<Home/>}/>
 			<Route path="/signin" element={<SignIn/>}/>
 			<Route path="/signup" element={<Register/>}/>
-			<Route path="/navbar" element={<Navbar/>}/>
-      <Route path="/footer" element={<Footer/>}/>
+      <Route path="/cart" element={<Cart/>}/>
+		
       </Routes>
       </Router>
   );

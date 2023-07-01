@@ -1,45 +1,71 @@
-import React from 'react'
-import bannerPic from '../public/pexels-ylanite-koppens-612825.jpg'
-import './componentStyles/Banner.css'
+import React from 'react';
+import styled from 'styled-components';
+import bannerImg from '../public/pexels-ylanite-koppens-612825.jpg';
+import './componentStyles/Banner.css';
 
-const Banner = (props) => {
+const Container = styled.div`
+  /* Empty for now */
+`;
+
+const Group17Wrapper = styled.div`
+  /* Empty for now */
+`;
+
+const BackgroundImage = styled.img`
+  /* Empty for now */
+`;
+
+const ContentWrapper = styled.div`
+  /* Empty for now */
+`;
+
+const Button = styled.button`
+  /* Empty for now */
+`;
+
+const Description = styled.span`
+  /* Empty for now */
+`;
+
+const SpecialDeals = styled.span`
+  /* Empty for now */
+`;
+
+const Logo = styled.div`
+  /* Empty for now */
+`;
+
+const BlackText = styled.span`
+  /* Empty for now */
+`;
+
+const YellowText = styled.span`
+  /* Empty for now */
+`;
+
+const Group17 = (props) => {
   return (
-    <>
-      <div className="group17-container">
-        <div className="group17-group17">
-          <img
-            src={bannerPic}
-            alt="pexelsylanitekoppens61282511634"
-            className="group17-pexelsylanitekoppens6128251"
-          />
-          <div className="group17-group5">
-            <button className="group17-button">
-              <span className="group17-text Button-Larg">See Collection</span>
-            </button>
-            <span className="group17-text01">
-              <span>
-                Click the button to have
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: ' ',
-                  }}
-                />
-              </span>
-              <br></br>
-              <span>various offers and gifts</span>
-            </span>
-            <span className="group17-text05">
-              <span>Special Deals</span>
-            </span>
-            <span className="group17-text07">
-              <span>MED</span>
-              <span className="group17-text09">HIVE</span>
-            </span>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
+    <Container className="group17-container">
+      <Group17Wrapper className="group17-group17">
+        <BackgroundImage
+          className="group17-pexelsylanitekoppens6128251"
+          src={bannerImg}
+          alt="pexelsylanitekoppens61282511634"
+        />
+        <ContentWrapper className="group17-group5">
+          <Button className="group17-button">See Collection</Button>
+          <Description className="group17-text02">
+            Click the button to have various offers and gifts
+          </Description>
+          <SpecialDeals className="group17-text07">Special Deals</SpecialDeals>
+          <Logo className="group17-text09">
+            <BlackText className="group17-text10">MED</BlackText>
+            <YellowText className="group17-text11">HIVE</YellowText>
+          </Logo>
+        </ContentWrapper>
+      </Group17Wrapper>
+    </Container>
+  );
+};
 
-export default Banner
+export default Group17;
