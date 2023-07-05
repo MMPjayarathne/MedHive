@@ -4,7 +4,7 @@ const { Category } = require('./category')
 const productSchema = mongoose.Schema({
     Name: {
         type: String,
-        required: true,
+        required: true
     },
     Description: String,
     Type: {
@@ -12,32 +12,28 @@ const productSchema = mongoose.Schema({
         enum: ['OTC', 'NONOTC'],
         required: true
       },
-    Image1: String,
-    Image2: String,
-     /* image1: {
-        data: Buffer,
-        contentType: String
-      },
-      image2: {
-        data: Buffer,
-        contentType: String
-      },
-      image3: {
-        data: Buffer,
-        contentType: String
-      },
-      image4: {
-        data: Buffer,
-        contentType: String
-      },*/
+    Image1: {
+      type: String,
+      required: true
+  },
+    Image2:{
+      type: String
+  },
+    Image3: {
+      type: String
+  },
+    Image4:{
+      type: String
+  },
     Brand: String,
     Price: Number,
     Category: { 
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category'
+        ref: 'Category',
+        required: true
     },
     Rating: Number,
-    Quentity: Number,
+    Quantity: Number,
     AddedDate: { type: Date, default: Date.now },
 })
 
