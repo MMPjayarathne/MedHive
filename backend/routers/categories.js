@@ -1,25 +1,14 @@
-const {Category} = require('../models/category');
 const express = require('express');
 const router = express.Router(); 
+const categoryController = require('../controller/categoryController')
+const upload = require('../middleware/categoryUpload');
 
 
-router.get(`/`, async(req,res)=>{
-    const categoryList = await Category.find();
-    res.send(categoryList)
-})
-
-router.post('/', async (req,res)=>{
-    let category = new Category({
-        Name: req.body.name,
-        Image: req.body.image
-    })
-    category = await category.save();
-
-    if(!category)
-    return res.status(400).send('the category cannot be created!')
-
-    res.send(category);
-})
+router.get(`/`,categoryController.getAllCategory )
+router.get('/:id', categoryController.getCategoryById);
+router.put('/:id', categoryController.updateCategoryById);
+router.delete('/:id', categoryController.deleteCategoryById);
+router.post('/', upload.single('image'), categoryController.store);
 
 
 
