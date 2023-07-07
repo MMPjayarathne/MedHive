@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { Users } = require('./users')
+const { Users } = require('./user')
 const { OrderItems } = require('./orderItems')
 
 const ordersSchema = mongoose.Schema({
