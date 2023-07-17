@@ -4,14 +4,17 @@ const bodyParser = require('body-parser')
 const morgan =  require('morgan');
 const mongoose = require('mongoose')
 const cors = require('cors');
-const authJwt = require('./helpers/jwt')
+const authJwt = require('./helpers/jwt');
+const errorHandler = require('./helpers/error-handler');
+
+
 require('dotenv/config');
 const api = process.env.API_URL;
 app.use(express.json());
 app.use(cors());
 app.options('*',cors());
 app.use(authJwt);
-
+app.use(errorHandler);
 
 const productsRouter = require('./routers/products');
 const categoriesRouter = require('./routers/categories');
@@ -19,8 +22,7 @@ const usersRouter = require('./routers/users');
 /*const ordersRouter = require('./routers/orders');
 const orderItemsRouter = require('./routers/orderItems');
  */
-
-
+app.use('/public', express.static('public'));
 
 //middleware
 app.use(bodyParser.json());
@@ -42,6 +44,7 @@ mongoose.connect(process.env.CONNECTION_STRING,{
 }).catch((err)=>{
     console.log(err);
 })
+
 
 app.listen(8080,()=>{
    

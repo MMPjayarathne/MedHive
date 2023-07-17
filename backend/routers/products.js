@@ -18,8 +18,8 @@ router.post('/',
     { name: 'image4', maxCount: 1 },
   ]),productController.store);
 router.get('/', productController.getAllProducts );
-router.get(`/get/count`,productController.getProductCount )
-router.get(`/get/featured/:count`, productController.getProducts)
+router.get(`/get/count`,productController.getProductCount );
+router.get(`/get/featured/:count`, productController.getProducts);
 router.get(`/search`,productController.searchProducts)
 
 

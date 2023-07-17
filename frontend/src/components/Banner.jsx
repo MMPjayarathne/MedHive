@@ -53,7 +53,11 @@ const Group17 = (props) => {
           alt="pexelsylanitekoppens61282511634"
         />
         <ContentWrapper className="group17-group5">
-          <Button className="group17-button">See Collection</Button>
+        <a href="#" class="animated-button1">
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>See Collection</a>
           <Description className="group17-text02">
             Click the button to have various offers and gifts
           </Description>

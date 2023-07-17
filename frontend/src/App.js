@@ -12,7 +12,7 @@ const RouterDOM = () => {
   return (
     <Router>
         <Routes>
-        <Route path="/home" element={<Home/>}/>
+      <Route path="/home" element={<Home/>}/>
 			<Route path="/signin" element={<SignIn/>}/>
 			<Route path="/signup" element={<Register/>}/>
       <Route path="/cart" element={<Cart/>}/>

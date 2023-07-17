@@ -12,7 +12,7 @@ const getAllUsers = async(req,res)=>{
 const store = async (req, res) => {
     try {
       const { name, email, password } = req.body;
-  
+
       // Check if the email already exists in the database
       const existingUser = await User.findOne({ Email: email });
       if (existingUser) {

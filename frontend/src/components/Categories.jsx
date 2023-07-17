@@ -3,6 +3,9 @@ import { categories } from "./CategoryData";
 
 import CategoryItem from "./CategoryItem";
 import { Typography } from "@mui/material";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
 
 const Container = styled.div`
   display: grid;
@@ -22,7 +25,27 @@ const TitleContainer = styled.div`
   margin-top: 20px;
 `;
 
+
+
 const Categories = () => {
+
+  const [Items, setItems] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/category`
+        );
+        setItems(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchItems();
+  }, []);
+
+
   return (
     <>
       <TitleContainer>
@@ -31,7 +54,7 @@ const Categories = () => {
         </Typography>
       </TitleContainer>
       <Container>
-        {categories.map((item) => (
+        {Items.map((item) => (
           <CategoryItem item={item} key={item.id} />
         ))}
       </Container>

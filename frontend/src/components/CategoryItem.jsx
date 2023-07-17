@@ -1,5 +1,7 @@
-import styled from "styled-components";
-import { BrowserRouter as Router, Route,Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+
 
 const Container = styled.div`
   flex: 1;
@@ -27,34 +29,42 @@ const Info = styled.div`
 `;
 
 const Title = styled.h1`
-    color:white;
-    margin-bottom: 20px;
+  color: white;
+  margin-bottom: 20px;
 `;
 
-const Button = styled.button`
-    border:none;
-    padding: 10px;
-    background-color: white;
-    color:gray;
-    cursor: pointer;
-    font-weight: 600;
-    border-radius: 10px;
-    transition: all 0.5s ease;
-    &:hover {
-        color: teal;
-        transform: scale(1.2);   
-      }
-`;
+const Button = styled(Link)`
+  display: inline-block;
+  border: none;
+  padding: 10px;
+  background-color: white;
+  color: gray;
+  cursor: pointer;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.5s ease;
 
+  &:hover {
+    color: teal;
+    transform: scale(1.2);
+  }
+`;
 
 const CategoryItem = ({ item }) => {
-  //console.log(item.img);
+  
+
+  const src = "http://localhost:8080/" +item.Image.replace(/\\/g, "/");;
+
+
+  console.log(item.id)
   return (
     <Container>
-      <Image src={item.img} />
+      <Image src={src} />
       <Info>
-        <Title>{item.title}</Title>
-        <Link to={`../pages/ProductList?categoryId=${item.id}`} ><Button>SHOP NOW</Button></Link>
+        <Title>{item.Name}</Title>
+        <Link to={`../pages/Store.jsx?categoryId=${item.id}`}>
+          <Button>SHOP NOW</Button>
+        </Link>
       </Info>
     </Container>
   );
