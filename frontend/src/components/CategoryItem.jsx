@@ -51,7 +51,11 @@ const Button = styled(Link)`
 `;
 
 const CategoryItem = ({ item }) => {
-  
+  const handleMedhiveClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = `../shop?categoryId=${item.id}`; // Replace with your homepage URL
+  };
+
 
   const src = "http://localhost:8080/" +item.Image.replace(/\\/g, "/");;
 
@@ -62,8 +66,8 @@ const CategoryItem = ({ item }) => {
       <Image src={src} />
       <Info>
         <Title>{item.Name}</Title>
-        <Link to={`../pages/Store.jsx?categoryId=${item.id}`}>
-          <Button>SHOP NOW</Button>
+        <Link >
+          <Button onClick={handleMedhiveClick}>SHOP NOW</Button>
         </Link>
       </Info>
     </Container>

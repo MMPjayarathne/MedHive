@@ -1,15 +1,15 @@
 .group17-container {
-    display: flex;
+   
     justify-content: center;
     align-items: center;
     padding-top: 40px ;
     padding-bottom: 40px ;
+    width: 100%;
     overflow: auto;
   }
   
   .group17-group17 {
     width: 100%;
-    max-width: 1313px;
     height: 423px;
     position: relative;
   }

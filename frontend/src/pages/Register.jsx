@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,17 +11,27 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Footer from '../components/Footer'
+import Navbar from '../components/Navbar'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://medhiv.com/">
-        MedHive
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+
+    <div> 
+    <Navbar />
+      <Typography variant="body2" color="text.secondary" align="center" {...props}>
+        {'Copyright © '}
+        <Link color="inherit" href="https://medhiv.com/">
+          MedHive
+        </Link>{' '}
+        {new Date().getFullYear()}
+        {'.'}    
+      </Typography>
+
+    </div>
   );
 }
 
@@ -34,8 +43,11 @@ export default function SignInSide() {
   const [password,setPassword] = useState('');
   const [confirmPassword,setConfirmPassword]=useState('');
   const [errors, setErrors] = useState({});
+  const [fieldError,setFieldError] = useState("")
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const newErrors = {};
@@ -59,12 +71,37 @@ export default function SignInSide() {
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      console.log({
-        email: data.get('email'),
-        userName: data.get('name'),
-        password: data.get('password'),
-
-      });
+      try{
+        const email = data.get('email');
+        const name  = data.get('name')
+        const password = data.get('password');
+        console.log({email,password,name});
+        const response = await axios.post(
+          'http://localhost:8080/api/v1/user/register',
+          {
+            name,
+            email,
+            password,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if(response.data.code==="01"){
+          setFieldError(response.data.message);
+        }
+        else if(response.data.code==="06"){
+          setFieldError(response.data.message);
+        }
+        else{
+          navigate('/signin');
+        }
+        console.log(email)
+      }catch(error){
+        console.error(error);
+      }
     }
     
   };

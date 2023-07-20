@@ -11,18 +11,26 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import React, { useState } from 'react';
+import Footer from '../components/Footer'
+import Navbar from '../components/Navbar'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import jwt_decode from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 function Copyright(props) {
   return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://medhiv.com/">
-        MedHive
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
+    <div> 
+    <Navbar />
+      <Typography variant="body2" color="text.secondary" align="center" {...props}>
+        {'Copyright © '}
+        <Link color="inherit" href="https://medhiv.com/">
+          MedHive
+        </Link>{' '}
+        {new Date().getFullYear()}
+        {'.'}
+      </Typography>
+    </div>
   );
 }
 
@@ -34,8 +42,14 @@ export default function SignInSide() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const [fieldError,setFieldError] = useState("")
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+
+  
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const newErrors = {};
@@ -47,13 +61,55 @@ export default function SignInSide() {
     }
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      console.log({
+      /*console.log({
         email: data.get('email'),
         password: data.get('password'),
-      });
+      });*/
+
+     
+      try{
+        const email = data.get('email');
+        const password = data.get('password');
+        console.log({email,password});
+        const response = await axios.post(
+          'http://localhost:8080/api/v1/user/login',
+          {
+            email,
+            password,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if(response.data.code==="01"){
+          setFieldError(response.data.message);
+        }
+        else if(response.data.code==="06"){
+          setFieldError(response.data.message);
+        }
+        else{
+          localStorage.setItem('token', response.data.token);
+
+          const decodedToken = jwt_decode(response.data.token);
+          const userData = {
+            id: decodedToken.sub,
+          };
+          setUser(userData);
+          localStorage.setItem('email',response.email);
+          localStorage.setItem('name',response.data.name);
+          localStorage.setItem('id',response.data.id);
+          localStorage.setItem('isAdmin',response.data.isAdmin);
+          navigate('/home');
+        }
+        console.log(email)
+      }catch(error){
+        console.error(error);
+      }
     }
   };
-
+ 
 
   return (
     <ThemeProvider theme={theme}>
@@ -124,6 +180,7 @@ export default function SignInSide() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                onSubmit={handleSubmit}
               >
                 Sign In
               </Button>

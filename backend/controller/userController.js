@@ -110,7 +110,7 @@ const login =  async (req,res) => {
             {expiresIn : '1d'}
         )
        
-        res.status(200).send({user: user.email , token: token}) 
+        res.status(200).send({email: user.Email ,id:user.id,name:user.Name, token: token , isAdmin:user.isAdmin}) 
     } else {
        res.status(400).send('password is wrong!');
     }

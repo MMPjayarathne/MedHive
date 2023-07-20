@@ -6,10 +6,74 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Avatar } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { Search } from '@mui/icons-material';
+import styled from "styled-components";
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
+const Button = styled(Link)`
+  
+  color:white;
+  &:hover {
+    color: teal;
+    transform: scale(1.2);
+  }
+`;
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+
+  const token = localStorage.getItem('token');
+  const name = localStorage.getItem('name');
+  const id = localStorage.getItem('id');
+  const isAdmin = localStorage.getItem('isAdmin');
+    
+  const handleMedhiveClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../home"; 
+  };
+  const handleHomeClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../home"; 
+  }
+  const handleShopClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../home"; 
+  };
+  const handleContactClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../home"; 
+  };
+  const handleAboutClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../home";
+  };
+  const handleAdminClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../home";
+  };
+
+
+  const handleLoginClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../signin"; 
+  };
+  const handleSignUpClick = () => {
+    // Perform any necessary actions before redirecting
+    window.location.href = "../signup"; 
+  };
+
+  const handleMyNameClick=()=>{
+
+    window.location.href = "../home";
+  }
+  const handleLogOutClick=()=>{
+
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
+    localStorage.removeItem('name');
+    localStorage.removeItem('id');
+    window.location.href = "../signin";
+  }
+
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -31,26 +95,56 @@ const Navbar = () => {
             }}
         />
     </ListItem>
-    <ListItem button>
+    <ListItem button onClick={handleHomeClick}>
         <ListItemText primary="Home" />
     </ListItem>
-    <ListItem button>
+    <ListItem button onClick={handleShopClick} >
         <ListItemText primary="Shop" />
     </ListItem>
-    <ListItem button>
+    <ListItem button onClick={handleContactClick} >
         <ListItemText primary="Contact" />
     </ListItem>
-    <ListItem button>
+    <ListItem buttononClick={handleAboutClick}>
         <ListItemText primary="About" />
     </ListItem>
-    <ListItem button>
-        <ListItemText primary="Login" />
-    </ListItem>
-    <ListItem button>
-        <ListItemText primary="Sign Up" />
-    </ListItem>
+
+    {token ? (
+              <>
+              {
+                isAdmin=="true"?(
+                    <ListItem button onClick={handleLoginClick}>
+                    <ListItemText primary= "Admin Dashboard"/>
+                    </ListItem>
+
+                ):(
+                    <ListItem button onClick={handleLoginClick}>
+                    <ListItemText primary= {name}/>
+                    </ListItem>
+                )
+              }
+              
+            <ListItem button onClick={handleLogOutClick}>
+                <ListItemText primary="Log Out" />
+            </ListItem>
+            </>
+            ):(
+                <>
+                <ListItem button onClick={handleLoginClick}>
+                    <ListItemText primary="Login" />
+                </ListItem>
+                <ListItem button onClick={handleSignUpClick}>
+                    <ListItemText primary="Sign Up" />
+                </ListItem>
+
+                </>
+            )
+    }
+              
+   
 </List>
   );
+
+
 
   return (
         <AppBar position="fixed" sx={{ backgroundColor: '#003256' }}>
@@ -64,7 +158,7 @@ const Navbar = () => {
                 >
                 <MenuIcon />
                 </IconButton>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }} onClick={handleMedhiveClick}>
                    MED<span style={{color: "#FFB800"}}>HIVE</span>
                 </Typography>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -90,36 +184,92 @@ const Navbar = () => {
                     }}
                 >
                     <Typography variant="body1" sx={{ mx: 1, mr:2}}>
+                        <Button onClick={handleHomeClick}>
                     Home
+                    </Button>
                     </Typography>
                     <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
+                    <Button onClick={handleHomeClick}>
                     Shop
+                    </Button>
                     </Typography>
                     <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
+                    <Button onClick={handleHomeClick}>
                     Contact
+                    </Button>
                     </Typography>
                     <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
+                    <Button onClick={handleHomeClick}>
                     About
+                    </Button>
                     </Typography>
-                    <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
-                    Login
-                    </Typography>
-                    <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
-                    Sign Up
-                    </Typography>
-                </Box>
-                <IconButton color="inherit" sx={{ mx: 2 }}>
-                    <Badge badgeContent={4} color="error">
-                    <ShoppingCartIcon />
-                    </Badge>
-                </IconButton>
-                </div>
-                <IconButton color="inherit" sx={{ mr: 2 }}>
-                <Badge badgeContent={2} color="error">
-                    <FavoriteIcon />
-                </Badge>
-                </IconButton>
 
+                    {token ? (
+                        <>
+                        {
+                            isAdmin === "true" ?(
+                                <Typography variant="body1" sx={{ mx: 1 , mr:2}} >
+                                <Button onClick={handleAdminClick}>
+                                Admin Dashboard
+                                </Button>
+                                </Typography>
+
+                            ):(
+                                <Typography variant="body1" sx={{ mx: 1 , mr:2}} >
+                                <Button onClick={handleMyNameClick}>
+                                {name}
+                                </Button>
+                                </Typography>
+
+                            )
+
+                        }
+                        
+                        <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
+                        <Button  onClick={handleLogOutClick}>
+                       Log Out
+                        </Button>
+                        </Typography>
+                        </>
+                    ):(
+                        <>
+                        <Typography variant="body1" sx={{ mx: 1 , mr:2}} >
+                        <Button onClick={handleLoginClick}>
+                        Login
+                        </Button>
+                        </Typography>
+                        <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
+                        <Button  onClick={handleSignUpClick}>
+                        Sign Up
+                        </Button>
+                        </Typography>
+                        </> 
+                    )}
+                  
+                </Box>
+
+                {
+                    
+                    isAdmin=="false"?(
+                        <>
+                        <IconButton color="inherit" sx={{ mx: 2 }}>
+                            <Badge badgeContent={4} color="error">
+                            <ShoppingCartIcon />
+                            </Badge>
+                        </IconButton>
+                        
+                        <IconButton color="inherit" sx={{ mr: 2 }}>
+                        <Badge badgeContent={2} color="error">
+                            <FavoriteIcon />
+                        </Badge>
+                        </IconButton>
+                        </>
+
+                    ):(
+                        <></>
+                    )
+                }
+                </div>
 
             </Toolbar>
             <Drawer anchor="left" open={mobileOpen} onClose={handleDrawerToggle}>
