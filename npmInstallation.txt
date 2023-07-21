@@ -1,0 +1,27 @@
+npm install
+
+ npm install @material-ui/core  
+ npm install @material-ui/icons
+ npm insatll styled-components 
+npm install @mui/icons-material        
+npm install @material-ui/core      
+npm install react-loading-skeleton    
+npm install mdb-react-ui-kit
+npm install jwt-decode
+npm install react-router-dom   
+npm install axios 
+
+
+ npm install prettier    
+npm install nodemon 
+ npm install express 
+apm install dotenv                                       
+npm install body-parser    
+npm install morgan   
+npm install mongoose     
+npm install cors     
+npm install --save multer  
+npm install bcryptjs  
+ npm i express-jwt  
+ > npm install nodemailer                                  
+npm install path-browserify url util stream-browserify buffer crypto-browserify os-browserify --save-dev    

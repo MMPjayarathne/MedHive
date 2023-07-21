@@ -2,6 +2,7 @@ const {User} = require('../models/user');
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 
 const getAllUsers = async(req,res)=>{
@@ -11,7 +12,7 @@ const getAllUsers = async(req,res)=>{
 
 const store = async (req, res) => {
     try {
-      const { name, email, password } = req.body;
+      const { name, email, password,authNumber } = req.body;
 
       // Check if the email already exists in the database
       const existingUser = await User.findOne({ Email: email });
@@ -35,7 +36,35 @@ const store = async (req, res) => {
         return res.status(400).send('The user could not be created!');
       }
   
+      // Send email with confirmation button
+    const confirmationLink = `http://localhost:3000/signin?active=${authNumber}`; // Replace this with the actual login page URL
+    const transporter = nodemailer.createTransport({
+      // Setup your email service configuration here
+      service: 'gmail',
+      auth: {
+        user: 'pramujaya2000@gmail.com', // Replace with your email address
+        pass: 'fdbxiycncqlsnbrt', // Replace with your email password
+      },
+    });
+
+    const mailOptions = {
+      from: 'pramujaya2000@gmail.com', // Replace with your email address
+      to: email,
+      subject: 'Account Confirmation',
+      html: `<p>Hello ${name}, Welcome to MEDHIVE</p><p>Thank you for registering! Please click the following link to confirm your account:</p><a href="${confirmationLink}">Confirm Account</a>`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({
+          error: 'Email could not be sent',
+          success: false,
+        });
+      }
+      console.log('Email sent: ' + info.response);
       res.send(user);
+    });
     } catch (error) {
       res.status(500).json({
         error: error.message,
@@ -66,6 +95,7 @@ const deleteUserById = (req, res)=>{
        return res.status(500).json({success: false, error: err}) 
     })
 }
+
 
 const updateUserById = async (req, res) => {
     try {
@@ -118,6 +148,44 @@ const login =  async (req,res) => {
     
 }
 
+const activate = async (req, res) => {
+  try {
+    const email = req.body.email;
+
+    // Find the user by email and update isActive field to true
+    const updatedUser = await User.findOneAndUpdate(
+      { Email: email },
+      { isActive: true },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found for the given email.' });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      success: false,
+    });
+  }
+};
+
+
+const getUserIdByEmail = async (req, res) => {
+  try {
+    const user = await User.findOne({ Email: req.body.email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found for the given email.' });
+    }
+
+    res.status(200).json({ userId: user.id }); // Make sure to send userId in the response
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred while fetching the user.', error: error.message });
+  }
+};
+
 
 module.exports = {
     getAllUsers,
@@ -126,5 +194,7 @@ module.exports = {
     deleteUserById,
     updateUserById,
     login,
+    activate,
+    getUserIdByEmail,
     
   };

@@ -10,6 +10,8 @@ function authJwt(req, res, next) {
     { url: /\/api\/v1\/category(.*)/, methods: ['GET', 'OPTIONS'] },
     { url: /\/api\/v1\/user\/login(.*)/, methods: ['POST'] },
     { url: /\/api\/v1\/user\/register(.*)/, methods: ['POST'] },
+    { url: /\/api\/v1\/user\/register\/auth(.*)/, methods: ['PUT'] },
+    { url: /\/api\/v1\/user\/register\/get(.*)/, methods: ['GET'] },
   ];
 
   // Check if the current path and method match an unprotected path

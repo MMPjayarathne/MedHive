@@ -17,6 +17,16 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+
+
+const theme = createTheme({
+  typography: {
+    body2: {
+      color: '#ff0000', // This sets the text color for body2 typography variant to red
+    },
+  },
+});
+
 function Copyright(props) {
   return (
 
@@ -35,7 +45,12 @@ function Copyright(props) {
   );
 }
 
-const theme = createTheme();
+function generateRandom5DigitNumber() {
+  const min = 10000; // Minimum 5-digit number (10,000)
+  const max = 99999; // Maximum 5-digit number (99,999)
+  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomNumber;
+}
 
 export default function SignInSide() {
   const [email,setEmail] =useState('');
@@ -75,6 +90,7 @@ export default function SignInSide() {
         const email = data.get('email');
         const name  = data.get('name')
         const password = data.get('password');
+        const authNumber = generateRandom5DigitNumber();
         console.log({email,password,name});
         const response = await axios.post(
           'http://localhost:8080/api/v1/user/register',
@@ -82,6 +98,7 @@ export default function SignInSide() {
             name,
             email,
             password,
+            authNumber,
           },
           {
             headers: {
@@ -89,12 +106,18 @@ export default function SignInSide() {
             },
           }
         );
-        if(response.data.code==="01"){
+  
+        localStorage.setItem('email', email); // Store userId in localStorage
+        localStorage.setItem('authNo', authNumber);
+
+
+        if(response.data.code==="400"){
+          setFieldError(response.data);
+        }
+        else if(response.data.code==="500"){
           setFieldError(response.data.message);
         }
-        else if(response.data.code==="06"){
-          setFieldError(response.data.message);
-        }
+
         else{
           navigate('/signin');
         }
@@ -134,13 +157,22 @@ export default function SignInSide() {
               alignItems: 'center',
             }}
           >
-            <Typography component="h1" variant="h5">Hi! Welcome to MedHive</Typography>
+            {!fieldError && (
+                <Typography component="h1" variant="h5">
+                  Hi! Welcome to MedHive
+                </Typography>
+              )}
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign Up
             </Typography>
+            {fieldError && (
+              <Typography variant="body2" color="error" align="center">
+                {fieldError}
+              </Typography>
+            )}
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
                 margin="normal"

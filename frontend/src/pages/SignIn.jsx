@@ -34,7 +34,13 @@ function Copyright(props) {
   );
 }
 
-const theme = createTheme();
+const theme = createTheme({
+  typography: {
+    body2: {
+      color: '#ff0000', // This sets the text color for body2 typography variant to red
+    },
+  },
+});
 
 
 
@@ -46,6 +52,51 @@ export default function SignInSide() {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const activateAccount = async () => {
+      const currentUrl = new URL(window.location.href);
+      const activeValue = currentUrl.searchParams.get('active');
+      const authNo = localStorage.getItem('authNo');
+      const tempEmail = localStorage.getItem('email');
+
+      console.log('coming', activeValue);
+      console.log('had', authNo);
+
+      if (activeValue === authNo) {
+        console.log('Hello');
+        try {
+          const response0 = await axios.put(
+            'http://localhost:8080/api/v1/user/register/auth',
+            {
+              email: tempEmail,
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (response0.data.code === '01') {
+            setFieldError(response0.data.message);
+          } else if (response0.data.code === '06') {
+            setFieldError(response0.data.message);
+          } else {
+            alert('Your account has been activated! Try signing in.');
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      if (activeValue && activeValue !== authNo) {
+        setFieldError('The activation link has expired!');
+      }
+    };
+
+    activateAccount();
+  }, []);
+
 
   
 
@@ -53,6 +104,7 @@ export default function SignInSide() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const newErrors = {};
+
     if (!data.get('email')) {
       newErrors.email = 'Email is required';
     }
@@ -139,13 +191,22 @@ export default function SignInSide() {
               alignItems: 'center',
             }}
           >
-            <Typography component="h1" variant="h5">Hi! Welcome again to MedHive</Typography>
+            {!fieldError && (
+              <Typography component="h1" variant="h5">
+                Hi! Welcome to MedHive
+              </Typography>
+            )}
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
               Sign in
             </Typography>
+            {fieldError && (
+              <Typography variant="body2" color="error" align="center">
+                {fieldError}
+              </Typography>
+            )}
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
