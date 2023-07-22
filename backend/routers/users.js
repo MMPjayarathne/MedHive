@@ -12,6 +12,7 @@ router.put('/:id',userController.updateUserById);
 router.put('/register/auth',userController.activate);
 router.delete('/:id',userController.deleteUserById);
 router.post('/register', upload.single('image'), userController.store);
+router.post('/register/email',userController.sentAuthMail);
 router.post('/login',userController.login)
 
 

@@ -34,6 +34,14 @@ function Copyright(props) {
   );
 }
 
+function generateRandom5DigitNumber() {
+  const min = 10000; // Minimum 5-digit number (10,000)
+  const max = 99999; // Maximum 5-digit number (99,999)
+  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+  return randomNumber;
+}
+
+
 const theme = createTheme({
   typography: {
     body2: {
@@ -41,6 +49,13 @@ const theme = createTheme({
     },
   },
 });
+
+        // Function to get the value of a query parameter from the URL
+ function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+ }
+
 
 
 
@@ -53,22 +68,20 @@ export default function SignInSide() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const currentUrl = new URL(window.location.href);
+   // console.log(currentUrl.searchParams.get('active'));
+    if(currentUrl.searchParams.get('active')){
+    
     const activateAccount = async () => {
-      const currentUrl = new URL(window.location.href);
+      const emailFromURL = getQueryParam('email');
+      //console.log(emailFromURL);
       const activeValue = currentUrl.searchParams.get('active');
-      const authNo = localStorage.getItem('authNo');
-      const tempEmail = localStorage.getItem('email');
-
-      console.log('coming', activeValue);
-      console.log('had', authNo);
-
-      if (activeValue === authNo) {
-        console.log('Hello');
         try {
           const response0 = await axios.put(
             'http://localhost:8080/api/v1/user/register/auth',
             {
-              email: tempEmail,
+              email: emailFromURL,
+              authNumber: activeValue,
             },
             {
               headers: {
@@ -77,25 +90,38 @@ export default function SignInSide() {
             }
           );
 
-          if (response0.data.code === '01') {
+          if (response0.status ===404) {
             setFieldError(response0.data.message);
-          } else if (response0.data.code === '06') {
+          } else if (response0.data.code === 400) {
             setFieldError(response0.data.message);
           } else {
             alert('Your account has been activated! Try signing in.');
           }
         } catch (error) {
           console.error(error);
+          if (error.response) {
+            // The request was made and the server responded with a status code outside the range of 2xx
+            console.log('Error Status:', error.response.status);
+            console.log('Error Data:', error.response.data);
+    
+            // You can display the error message to the user or handle it as needed
+            setFieldError(error.response.data + ' Register again!');
+          } else if (error.request) {
+            // The request was made, but no response was received
+            console.log('No response received:', error.request);
+            setFieldError('No response from the server. Please try again later.');
+          } else {
+            // Something happened in setting up the request that triggered an Error
+            console.log('Error:', error.message);
+            setFieldError('An unexpected error occurred. Please try again.');
+          }
         }
-      }
-
-      if (activeValue && activeValue !== authNo) {
-        setFieldError('The activation link has expired!');
-      }
     };
 
     activateAccount();
-  }, []);
+  }}, []);
+
+  
 
 
   
@@ -104,6 +130,51 @@ export default function SignInSide() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const newErrors = {};
+
+    const handleResendEmail = async () => {
+      try {
+        const email = data.get('email');
+        const name = data.get('name');
+        const authNumber = generateRandom5DigitNumber();
+        const response = await axios.post(
+          'http://localhost:8080/api/v1/user/register/email',
+          {
+            authNumber,
+            email,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        if(response.status === 200){
+          setFieldError("Email Sent Again. Check your inbox or spam.")
+        }
+      } catch (error) {
+        console.error(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code outside the range of 2xx
+          console.log('Error Status:', error.response.status);
+          console.log('Error Data:', error.response.data);
+  
+          // You can display the error message to the user or handle it as needed
+          setFieldError(error.response.data + ' Register again!');
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.log('No response received:', error.request);
+          setFieldError('No response from the server. Please try again later.');
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error:', error.message);
+          setFieldError('An unexpected error occurred. Please try again.');
+        }
+      }
+
+      
+    };
+
+
 
     if (!data.get('email')) {
       newErrors.email = 'Email is required';
@@ -157,7 +228,33 @@ export default function SignInSide() {
         }
         console.log(email)
       }catch(error){
-        console.error(error);
+         if (error.response) {
+        console.log('Error Status:', error.response.status);
+        console.log('Error Data:', error.response.data);
+          if( error.response.status===500){
+        setFieldError(
+          <>
+            {error.response.data}.{' '}
+            <Link component="button" variant="body2" onClick={handleResendEmail}>
+              Click here
+            </Link>{' '}
+            to resend email.
+          </>,
+        );
+          }
+          else if(error.response.status===400){
+            setFieldError(error.response.data);
+          }
+        
+      } else if (error.request) {
+        // The request was made, but no response was received
+        console.log('No response received:', error.request);
+        setFieldError('No response from the server. Please try again later.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.log('Error:', error.message);
+        setFieldError('An unexpected error occurred. Please try again.');
+      }
       }
     }
   };

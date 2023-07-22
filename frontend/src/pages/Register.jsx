@@ -91,14 +91,11 @@ export default function SignInSide() {
         const name  = data.get('name')
         const password = data.get('password');
         const authNumber = generateRandom5DigitNumber();
-        console.log({email,password,name});
         const response = await axios.post(
-          'http://localhost:8080/api/v1/user/register',
+          'http://localhost:8080/api/v1/user/register/email',
           {
-            name,
-            email,
-            password,
             authNumber,
+            email,
           },
           {
             headers: {
@@ -106,24 +103,61 @@ export default function SignInSide() {
             },
           }
         );
-  
-        localStorage.setItem('email', email); // Store userId in localStorage
-        localStorage.setItem('authNo', authNumber);
 
 
-        if(response.data.code==="400"){
-          setFieldError(response.data);
-        }
-        else if(response.data.code==="500"){
-          setFieldError(response.data.message);
-        }
+        if(response.status === 200){
+              console.log({email,password,name});
+              const response = await axios.post(
+                'http://localhost:8080/api/v1/user/register',
+                {
+                  name,
+                  email,
+                  password,
+                  authNumber,
+                },
+                {
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+        
+              localStorage.setItem('email', email); // Store userId in localStorage
 
-        else{
-          navigate('/signin');
-        }
-        console.log(email)
+
+              if(response.data.code==="400"){
+                setFieldError(response.data);
+              }
+              else if(response.data.code==="500"){
+                setFieldError(response.data.message);
+              }
+
+              else{
+                navigate('/signin');
+              }
+              console.log(email)
+            }
+            else{
+              setFieldError('Internal Server error! Please try again later');
+            }
       }catch(error){
         console.error(error);
+        if (error.response) {
+          // The request was made and the server responded with a status code outside the range of 2xx
+          console.log('Error Status:', error.response.status);
+          console.log('Error Data:', error.response.data);
+  
+          // You can display the error message to the user or handle it as needed
+          setFieldError(error.response.data + ' Register again!');
+        } else if (error.request) {
+          // The request was made, but no response was received
+          console.log('No response received:', error.request);
+          setFieldError('No response from the server. Please try again later.');
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log('Error:', error.message);
+          setFieldError('An unexpected error occurred. Please try again.');
+        }
       }
     }
     

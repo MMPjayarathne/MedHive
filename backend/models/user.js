@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema({
         type: Boolean,
         default:false
     },
+    authNumber:Number,
     isActive: { 
         type: Boolean,
         default:false
