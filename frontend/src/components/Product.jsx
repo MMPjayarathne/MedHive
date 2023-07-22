@@ -35,9 +35,9 @@ import {
   
   const Container = styled.div`
     flex: 1;
-    margin: 5px;
+    margin: 3px;
     min-width: 280px;
-    height: 400px;
+    height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -89,11 +89,13 @@ import {
 `;
   
   const Product = ({ item }) => {
+
+    const src = "http://localhost:8080/" +item.Image1.replace(/\\/g, "/");
     return (
         <OuterContainer>
             <Container>
                 <Circle />
-                <Image src={item.img} />
+                <Image src={src} />
                 <Info>
                 <Icon>
                     <ShoppingCartOutlined/>
@@ -107,8 +109,9 @@ import {
                 </Info>
             </Container>
             <Description>
-                    <h3>{item.title}</h3>
-                    <p> <br/>{item.price}</p>
+                    <h3>{item.Brand}</h3>
+                    <p>({item.Name})</p>
+                    <p> <br/>Rs.{item.Price}</p>
                 </Description>
     </OuterContainer>
     );

@@ -17,7 +17,6 @@ const store = (req, res) => {
       Type: req.body.type,
       Brand: req.body.brand,
       Price: req.body.price,
-      Category: req.body.category,
       Rating: req.body.rating,
       Quantity: req.body.quantity,
     });

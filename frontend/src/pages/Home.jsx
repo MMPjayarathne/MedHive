@@ -9,17 +9,36 @@ import {items} from '../components/Items'
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { slidesData } from "../components/SlidesData";
-
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
 
+  const [errors, setErrors] = useState({});
+  const [fieldError,setFieldError] = useState("");;
+  const navigate = useNavigate();
+
+  const [Items, setItems] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/products`
+        );
+        setItems(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchItems();
+  }, []);
 return (
     <div> 
         <Navbar />
         <Slider slides={slidesData} />
         <Categories/>
         <Banner/>
-        <Products items={items}/>
+        <Products items={Items}/>
         <br/>
         <Newsletter/>
         <Footer/>

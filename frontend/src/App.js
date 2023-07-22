@@ -7,6 +7,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Cart from './pages/ShoppingCart'
+import Store from './pages/Store'
 
 const RouterDOM = () => {
   return (
@@ -16,6 +17,7 @@ const RouterDOM = () => {
 			<Route path="/signin" element={<SignIn/>}/>
 			<Route path="/signup" element={<Register/>}/>
       <Route path="/cart" element={<Cart/>}/>
+      <Route path="/store" element={<Store/>}/>
 		
       </Routes>
       </Router>
