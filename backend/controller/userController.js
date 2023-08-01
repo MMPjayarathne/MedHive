@@ -42,22 +42,13 @@ const store = async (req, res) => {
       console.log(error);
     }
   };
-
+  
   const sentAuthMail = async(req,res)=>{
 
       try{
         const authNumber = req.body.authNumber;
         const email = req.body.email;
-        const user = await User.findOne({Email:email});
-        const name = user.Name;
-        if(user){
-          const updatedUser = await User.findOneAndUpdate(
-            { Email: email },
-            { authNumber },
-            { new: true }
-          );
-
-        }
+        const name = req.body.name;
         const confirmationLink = `http://localhost:3000/signin?active=${authNumber}&email=${encodeURIComponent(email)}`;
                      // Replace this with the actual login page URL
         const transporter = nodemailer.createTransport({

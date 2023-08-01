@@ -96,6 +96,7 @@ export default function SignInSide() {
           {
             authNumber,
             email,
+            name,
           },
           {
             headers: {

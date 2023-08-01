@@ -19,6 +19,9 @@ app.use(errorHandler);
 const productsRouter = require('./routers/products');
 const categoriesRouter = require('./routers/categories');
 const usersRouter = require('./routers/users');
+const cartRouter = require('./routers/cart');
+
+
 /*const ordersRouter = require('./routers/orders');
 const orderItemsRouter = require('./routers/orderItems');
  */
@@ -32,7 +35,7 @@ app.use(morgan('tiny'));
 app.use(`${api}/products`,productsRouter)
 app.use(`${api}/category`,categoriesRouter)
 app.use(`${api}/user`,usersRouter)
-
+app.use(`${api}/cart`,cartRouter)
 
 
 

@@ -1,3 +1,4 @@
+Front end
 npm install
 
  npm install @material-ui/core  
@@ -11,6 +12,8 @@ npm install jwt-decode
 npm install react-router-dom   
 npm install axios 
 
+
+Back end
 
  npm install prettier    
 npm install nodemon 
