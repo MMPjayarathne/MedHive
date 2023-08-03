@@ -71,5 +71,4 @@ const Group17 = (props) => {
     </Container>
   );
 };
-
 export default Group17;

@@ -11,15 +11,19 @@ import Store from './pages/Store'
 
 const RouterDOM = () => {
   return (
+    
     <Router>
-        <Routes>
+      <Navbar />
+      <Routes>
+      
       <Route path="/home" element={<Home/>}/>
 			<Route path="/signin" element={<SignIn/>}/>
 			<Route path="/signup" element={<Register/>}/>
       <Route path="/cart" element={<Cart/>}/>
       <Route path="/store" element={<Store/>}/>
-		
+     
       </Routes>
+      <Footer/>
       </Router>
   );
   }

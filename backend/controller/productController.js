@@ -170,10 +170,24 @@ const getProducts = async (req, res) =>{
     }
   };
 
-  
-  
-  
 
+  const getProductsByCategory= async (req, res) => {
+    console.log("Hello")
+    const categoryId = req.query.id;
+    console.log(req.query.id)
+
+    try {
+      const productsList = await Product.findByCategoryId(categoryId);
+      res.send(productsList);
+    } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal server error. Try again later");
+    }
+  };
+  
+  
+  
+  
   module.exports = {
     getAllProducts,
     store,
@@ -184,4 +198,5 @@ const getProducts = async (req, res) =>{
     getProductCount,
     getProducts,
     searchProducts,
+    getProductsByCategory,
   };

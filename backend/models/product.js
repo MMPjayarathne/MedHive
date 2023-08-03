@@ -37,6 +37,16 @@ const productSchema = mongoose.Schema({
     AddedDate: { type: Date, default: Date.now },
 })
 
+productSchema.statics.findByCategoryId = async function (categoryId) {
+  try {
+    // Find products with the given categoryId
+    const products = await this.find({ Category: categoryId }).populate('Category');
+    return products;
+  } catch (error) {
+    throw error;
+  }
+};
+
 productSchema.virtual('id').get(function(){
   return this._id.toHexString();
 })

@@ -53,7 +53,7 @@ const Button = styled(Link)`
 const CategoryItem = ({ item }) => {
   const handleMedhiveClick = () => {
     // Perform any necessary actions before redirecting
-    window.location.href = `../shop?categoryId=${item.id}`; // Replace with your homepage URL
+    window.location.href = `../store?categoryId=${item.id}`; // Replace with your homepage URL
   };
 
 

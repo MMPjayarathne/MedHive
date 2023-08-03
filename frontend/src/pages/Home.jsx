@@ -34,14 +34,14 @@ const Home = () => {
   }, []);
 return (
     <div> 
-        <Navbar />
+       
         <Slider slides={slidesData} />
         <Categories/>
         <Banner/>
         <Products items={Items}/>
         <br/>
         <Newsletter/>
-        <Footer/>
+       
     </div>
   );
 

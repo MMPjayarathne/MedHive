@@ -5,7 +5,7 @@ const productController = require('../controller/productController')
 const mongoose = require('mongoose');
 
 
-
+router.get('/category',productController.getProductsByCategory);
 router.get('/:id',productController.getProductById);
 router.put('/:id',productController.updateProductById);
 router.put('/updateImage/:id',productController.updateImageById);
@@ -20,9 +20,8 @@ router.post('/',
 router.get('/', productController.getAllProducts );
 router.get(`/get/count`,productController.getProductCount );
 router.get(`/get/featured/:count`, productController.getProducts);
-router.get(`/search`,productController.searchProducts)
 
-
+router.get(`/search`,productController.searchProducts);
 
 
 module.exports = router;

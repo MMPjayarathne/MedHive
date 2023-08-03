@@ -12,6 +12,7 @@ import { slidesData } from "../components/SlidesData";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { useLocation } from "react-router-dom";
 
 
 const theme = createTheme({
@@ -28,27 +29,56 @@ const Store = () => {
   const navigate = useNavigate();
 
   const [Items, setItems] = useState([]);
+
+  const location = useLocation();
+  const categoryId = new URLSearchParams(location.search).get("categoryId");
+  console.log(categoryId);
   useEffect(() => {
     const fetchItems = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/api/v1/products`
-        );
-        setItems(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.log(error);
+      if(categoryId){
+        try {
+          const response = await axios.get(`http://localhost:8080/api/v1/products/category?id=${categoryId}`, {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          })
+            .then((response) => {
+              console.log(response.data);
+              setItems(response.data);
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+          
+        } catch (error) {
+          console.log(error);
+        }
+
+      }else{
+
+        try {
+          const response = await axios.get(
+            `http://localhost:8080/api/v1/products`
+          );
+          setItems(response.data);
+          console.log(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+
       }
+     
     };
     fetchItems();
-  }, []);
+  }, [categoryId]);
+  
 
   
 
 return (
   <ThemeProvider theme={theme}>
     <div> 
-        <Navbar />
+      
         {fieldError && (
               <Typography variant="body2" color="error" align="center">
                 {fieldError}
@@ -57,7 +87,7 @@ return (
         <Products items={Items}/>
         <br/>
         <Newsletter/>
-        <Footer/>
+   
     </div>
     </ThemeProvider>
   );
