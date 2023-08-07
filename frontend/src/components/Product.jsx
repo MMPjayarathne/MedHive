@@ -95,6 +95,12 @@ import {
   
   const Product = ({ item }) => {
 
+    const handleProductClick = () => {
+      // Use the Link component to navigate to the product page
+      window.location.href = `/product?productId=${item._id}`;
+    };
+  
+
     const src = "http://localhost:8080/" +item.Image1.replace(/\\/g, "/");
     return (
       <>
@@ -107,7 +113,7 @@ import {
                     <ShoppingCartOutlined/>
                 </Icon>
                 <Icon>
-                    <SearchOutlined  />
+                    <SearchOutlined onClick={handleProductClick} />
                 </Icon>
                 <Icon>
                     <LocalMallOutlined/>
