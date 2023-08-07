@@ -36,7 +36,7 @@ const Navbar = () => {
   }
   const handleShopClick = () => {
     // Perform any necessary actions before redirecting
-    window.location.href = "../home"; 
+    window.location.href = "../store"; 
   };
   const handleContactClick = () => {
     // Perform any necessary actions before redirecting
@@ -189,7 +189,7 @@ const Navbar = () => {
                     </Button>
                     </Typography>
                     <Typography variant="body1" sx={{ mx: 1 , mr:2}}>
-                    <Button onClick={handleHomeClick}>
+                    <Button onClick={handleShopClick}>
                     Shop
                     </Button>
                     </Typography>
@@ -259,9 +259,11 @@ const Navbar = () => {
                         </IconButton>
                         
                         <IconButton color="inherit" sx={{ mr: 2 }}>
-                        <Badge badgeContent={2} color="error">
-                            <FavoriteIcon />
-                        </Badge>
+                          <img
+                            src= "https://freesvg.org/img/abstract-user-flat-4.png" // Replace with the actual URL or source of the user's image
+                            alt="User"
+                            style={{ width: '32px', height: '32px', borderRadius: '50%' }}
+                          />
                         </IconButton>
                         </>
 

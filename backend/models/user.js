@@ -13,7 +13,11 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-   /* Image: String,
+    Image: {
+        type: String,
+        default: 'https://freesvg.org/img/abstract-user-flat-4.png',
+    },
+   /*
     Street: String,
     Postalcode: String,
     City: String,

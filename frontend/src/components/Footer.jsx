@@ -13,15 +13,44 @@ import IconButton from '@mui/material/IconButton';
 import PaymentMethods from '../public/icons_payment1.jpg';
 import styled from "styled-components";
 
-
+const FooterContainer = styled.footer`
+  padding: 20px;
+  
+`;
 const ImgContainer = styled.div`
-  height: 100%;
+  height: auto;
   flex: 1;
 `;
 
 const Image = styled.img`
   height: 90%;
 `;
+
+const Container = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+`;
+
+const Column = styled.div`
+  flex: 1;
+  min-width: 150px;
+`;
+
+const SocialLinks = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+const BottomContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #333; /* Adjust the color as needed */
+`;
+
 
 const Footer = () => {
     return (
@@ -60,16 +89,16 @@ const Footer = () => {
                         <div className={styles['footer-col']}>
                             <h4>follow us</h4>
                             <div className={styles['social-links']}>
-                                <IconButton href="#">
+                                <IconButton href="#" className={styles['social-icon']}>
                                     <Facebook />
                                 </IconButton>
-                                <IconButton href="#">
+                                <IconButton href="#" className={styles['social-icon']}>
                                     <Twitter />
                                 </IconButton>
-                                <IconButton href="#">
+                                <IconButton href="#" className={styles['social-icon']}>
                                     <Instagram />
                                 </IconButton>
-                                <IconButton href="#">
+                                <IconButton href="#" className={styles['social-icon']}>
                                     <LinkedIn />
                                 </IconButton>
                             </div>

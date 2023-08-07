@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Cart from './pages/ShoppingCart'
 import Store from './pages/Store'
+import SingleProduct from './pages/SingleProduct'
 
 const RouterDOM = () => {
   return (
@@ -21,6 +22,8 @@ const RouterDOM = () => {
 			<Route path="/signup" element={<Register/>}/>
       <Route path="/cart" element={<Cart/>}/>
       <Route path="/store" element={<Store/>}/>
+      <Route path="/product" element={<SingleProduct/>}/>
+      
      
       </Routes>
       <Footer/>

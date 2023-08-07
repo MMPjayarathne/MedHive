@@ -15,6 +15,9 @@ import {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  
 `;
 
   const Info = styled.div`
@@ -43,6 +46,8 @@ import {
     justify-content: center;
     background-color: #f5fbfd;
     position: relative;
+    padding-left: 10px;
+    padding-right: 10px;
   
     &:hover ${Info}{
       opacity: 1;
@@ -92,6 +97,7 @@ import {
 
     const src = "http://localhost:8080/" +item.Image1.replace(/\\/g, "/");
     return (
+      <>
         <OuterContainer>
             <Container>
                 <Circle />
@@ -114,6 +120,7 @@ import {
                     <p> <br/>Rs.{item.Price}</p>
                 </Description>
     </OuterContainer>
+    </>
     );
   };
   
