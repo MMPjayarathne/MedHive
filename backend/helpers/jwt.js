@@ -14,7 +14,7 @@ function authJwt(req, res, next) {
     { url: /\/api\/v1\/user\/register\/get(.*)/, methods: ['GET'] },
     { url: /\/api\/v1\/user\/register\/email(.*)/, methods: ['POST'] },
   ];
-
+  
   // Check if the current path and method match an unprotected path
   const isUnprotected = unprotectedPaths.some(path => {
     if (typeof path === 'string') {
