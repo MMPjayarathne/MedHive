@@ -8,27 +8,53 @@ require('dotenv').config();
 const { secret, API_URL } = process.env;
 const mongoose = require('mongoose');
 
-const getCartByUserId = async(req,res)=>{
-    try{
-        const decodedUser = jwt.verify(req.body.token, secret);
+const getCartByUserId = async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]; // Extract the token from the Authorization header
+        const decodedUser = jwt.verify(token, secret);
         const cart = await Cart.findByUser(decodedUser.userId);
-        if(cart){
-            res.send(cart);
-        }
-        else{
+
+        if (cart) {
+            const temporaryList = [];
+
+            for (const cartItemId of cart.CartItems) {
+                console.log(cartItemId);
+                try {
+                    const cartItem = await CartItems.findById(cartItemId); // Assuming the model is named "CartItem"
+                    
+                    const product = await Product.findById(cartItem.Product); // Assuming the model is named "Product"
+
+                    temporaryList.push({
+                        productId: cartItemId,
+                        name: product.Name,
+                        quantity: cartItem.Quantity,
+                    });
+                } catch (error) {
+                    console.log("Error fetching cart item or product:", error);
+                }
+            }
+
+            const data = {
+                totalPrice: cart.TotalPrice,
+                productList: temporaryList,
+            };
+
+            res.send(data);
+        } else {
             res.status(400).send("There is a server issue. Try again later");
         }
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Invalid Authentication");
     }
-    catch(error){
-        console.log(error)
-        res.status(500).send("Invalid Authentication")
-    }
-    
-}
+};
+
+
 
 const store = async(req,res)=>{
     try{
-        const decodedUser =  jwt.verify(req.body.token, secret);
+        const token = req.headers.authorization.split(' ')[1]; // Extract the token from the Authorization header
+        const decodedUser =  jwt.verify(token, secret);
         console.log(decodedUser);
         const userId = decodedUser.userId;
         const productId = req.body.productId;

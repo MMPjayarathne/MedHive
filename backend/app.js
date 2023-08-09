@@ -48,6 +48,10 @@ mongoose.connect(process.env.CONNECTION_STRING,{
     console.log(err);
 })
 
+app.use(cors({
+    origin: 'http://localhost:3000', // Replace with your front-end origin
+    credentials: true, // Allow credentials (cookies, headers)
+  }));
 
 app.listen(8080,()=>{
    
