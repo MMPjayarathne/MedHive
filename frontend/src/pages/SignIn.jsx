@@ -17,6 +17,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import jwt_decode from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Copyright(props) {
   return (
@@ -213,17 +214,19 @@ export default function SignInSide() {
           setFieldError(response.data.message);
         }
         else{
-          localStorage.setItem('token', response.data.token);
-
           const decodedToken = jwt_decode(response.data.token);
           const userData = {
             id: decodedToken.sub,
           };
+          Cookies.set("token", response.data.token, {
+            expires: new Date(decodedToken.exp * 1000)
+          });
           setUser(userData);
-          localStorage.setItem('email',response.email);
-          localStorage.setItem('name',response.data.name);
-          localStorage.setItem('id',response.data.id);
-          localStorage.setItem('isAdmin',response.data.isAdmin);
+
+          localStorage.setItem('email', response.data.email); // Corrected this line
+          localStorage.setItem('name', response.data.name);
+          localStorage.setItem('id', response.data.id);
+          localStorage.setItem('isAdmin', response.data.isAdmin);
           navigate('/home');
         }
         console.log(email)

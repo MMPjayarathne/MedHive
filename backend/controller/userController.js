@@ -192,6 +192,11 @@ const login =  async (req,res) => {
             secret,
             {expiresIn : '1d'}
         )
+        res.cookie("token",token,
+        {
+          expiresIn:new Date(Date.now + 25892000000),
+          httpOnly:true
+        });
        
         res.status(200).send({email: user.Email ,id:user.id,name:user.Name, token: token , isAdmin:user.isAdmin}) 
     }

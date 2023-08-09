@@ -12,14 +12,27 @@ import {
   MDBTypography,
   } from "mdb-react-ui-kit";
   import 'mdb-react-ui-kit/dist/css/mdb.min.css';
-  import React from "react";
   import "./pageStyles/ShoppingCart.css"
-
+  import axios from 'axios';
+  import React, { useEffect, useState } from 'react';
+  import { useNavigate } from 'react-router-dom';
 
 
   export default function ShoppingCart() {
 
-
+    const [Items, setItems] = useState([]);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/api/v1/cart`, { withCredentials: true })
+        setItems(response.data);
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchItems();
+  }, []);
     
   return (
   <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>

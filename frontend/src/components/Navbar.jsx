@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Badge, Drawer, List, ListItem, ListItemIcon, ListItemText,Box,TextField } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -8,6 +8,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Search } from '@mui/icons-material';
 import styled from "styled-components";
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Button = styled(Link)`
   
@@ -17,15 +18,37 @@ const Button = styled(Link)`
     transform: scale(1.2);
   }
 `;
+// const getTokenFromCookie = () => {
+//   const cookieArray = document.cookie.split(';');
+//   for (const cookie of cookieArray) {
+//     const [name, value] = cookie.trim().split('=');
+//     if (name === 'authToken') {
+//       return value;
+//     }
+//   }
+//   return null;
+// };
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
-  const token = localStorage.getItem('token');
+  const [token, setToken] = useState(null);
   const name = localStorage.getItem('name');
   const id = localStorage.getItem('id');
   const isAdmin = localStorage.getItem('isAdmin');
     
+  // useEffect(() => {
+  //   const retrievedToken = getTokenFromCookie();
+  //   setToken(retrievedToken);
+  //   console.log(retrievedToken);
+  // }, []);
+
+  useEffect(() => {
+    const temptoken = Cookies.get('token');
+    setToken(temptoken)
+  
+  }, []);
+
+
   const handleMedhiveClick = () => {
     // Perform any necessary actions before redirecting
     window.location.href = "../home"; 
