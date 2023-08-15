@@ -54,6 +54,5 @@ app.use(cors({
   }));
 
 app.listen(8080,()=>{
-   
     console.log('Server is runnig http://localhost:8080');
 })

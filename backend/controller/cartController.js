@@ -28,6 +28,8 @@ const getCartByUserId = async (req, res) => {
                         productId: cartItemId,
                         name: product.Name,
                         quantity: cartItem.Quantity,
+                        price: product.Price,
+                        image: product.Image1,
                     });
                 } catch (error) {
                     console.log("Error fetching cart item or product:", error);

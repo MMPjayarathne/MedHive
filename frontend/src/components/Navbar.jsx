@@ -90,10 +90,12 @@ const Navbar = () => {
   }
   const handleLogOutClick=()=>{
 
+    Cookies.remove('token');
     localStorage.removeItem('token');
     localStorage.removeItem('email');
     localStorage.removeItem('name');
     localStorage.removeItem('id');
+
     window.location.href = "../signin";
   }
 
