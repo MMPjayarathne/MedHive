@@ -14,12 +14,25 @@ function authJwt(req, res, next) {
     { url: /\/api\/v1\/user\/register\/get(.*)/, methods: ['GET'] },
     { url: /\/api\/v1\/user\/register\/email(.*)/, methods: ['POST'] },
   ];
+
+  const adminPaths = [
+    { url: /\/api\/v1\/admin\/(.*)/, methods: ['GET', 'POST', 'PUT', 'DELETE'] },
+    // Add other paths only accessible by admins here
+  ];
+
   
   // Check if the current path and method match an unprotected path
   const isUnprotected = unprotectedPaths.some(path => {
     if (typeof path === 'string') {
       return req.path === path && req.method === 'GET';
     } else if (path.url instanceof RegExp) {
+      return path.url.test(req.path) && path.methods.includes(req.method);
+    }
+    return false;
+  });
+
+  const isAdmin = adminPaths.some(path => {
+    if (path.url instanceof RegExp) {
       return path.url.test(req.path) && path.methods.includes(req.method);
     }
     return false;
@@ -38,7 +51,7 @@ function authJwt(req, res, next) {
   try {
     const decoded = jwt.verify(token, secret);
     req.user = decoded;
-    if (!decoded.isAdmin) {
+    if (!decoded.isAdmin && isAdmin) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
     next();
