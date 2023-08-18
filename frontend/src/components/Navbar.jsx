@@ -83,6 +83,9 @@ const Navbar = () => {
     // Perform any necessary actions before redirecting
     window.location.href = "../signup"; 
   };
+  const handleCart = ()=>{
+    window.location.href = "/cart"
+  }
 
   const handleMyNameClick=()=>{
 
@@ -279,7 +282,7 @@ const Navbar = () => {
                         <>
                         <IconButton color="inherit" sx={{ mx: 2 }}>
                             <Badge badgeContent={4} color="error">
-                            <ShoppingCartIcon />
+                            <ShoppingCartIcon onClick={handleCart} />
                             </Badge>
                         </IconButton>
                         
