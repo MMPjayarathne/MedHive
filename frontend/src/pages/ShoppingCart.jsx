@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import {
   MDBBtn,
   MDBCard,
@@ -9,57 +13,142 @@ import {
   MDBInput,
   MDBRow,
   MDBTypography,
+  MDBModal, // Import MDBModal component
+  MDBModalBody,
+  MDBModalHeader,
+  MDBModalFooter,
   } from "mdb-react-ui-kit";
-  import 'mdb-react-ui-kit/dist/css/mdb.min.css';
-  import "./pageStyles/ShoppingCart.css"
-  import axios from 'axios';
-  import React, { useEffect, useState } from 'react';
-  import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
-import Cookies from "js-cookie";
-import { MDBIcon} from 'mdbreact';
-import SignIn from "./SignIn"
+  import { MDBIcon} from 'mdbreact';
 import { ThreeDots } from 'react-loader-spinner';
+import 'mdb-react-ui-kit/dist/css/mdb.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useLocation } from "react-router-dom";
+import SignIn from './SignIn';
+import './pageStyles/ShoppingCart.css';
 
-  export default function ShoppingCart() {
-
-    const [Items, setItems] = useState([]);
-    const [Products, setProducts] = useState([]); 
-    const [token, setToken] = useState([]);
-    const [loading, setLoading] = useState(true); // Add a loading state
-    useEffect(() => {
-      // Retrieve token from cookies
-      const temptoken = Cookies.get('token');
-      setToken(temptoken);
-      console.log(temptoken)
-      // Fetch items using the retrieved token
-      if (temptoken) {
-        fetchItems(temptoken);
-      }
-    }, []);
+export default function ShoppingCart() {
+  const location = useLocation();
+  const [URLproductId, setURLproductId] = useState([null]);
+  const [URLquantity, setURLquantity] = useState([null]);
+  const [Items, setItems] = useState([]);
+  const [token, setToken] = useState(Cookies.get('token') || '');
+  const [loading, setLoading] = useState(true);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [Products, setProducts] = useState([]); 
+  const [selectedProductId, setSelectedProductId] = useState(null);
+  const tempURLproductId = new URLSearchParams(location.search).get("productId");
+  const tempURLquantity = new URLSearchParams(location.search).get("quantity")
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    setURLproductId(tempURLproductId);
+    setURLquantity(tempURLquantity);
+    if (token) {
+      fetchItems(token);
+    }
     
-    const fetchItems = async (token) => {
-      try {
-        const response = await axios.get(`http://localhost:8080/api/v1/cart`, {
-          headers: {
-            Authorization: `Bearer ${token}`
+    addItemToCart();
+    
+  }, [token]);
+
+  
+  const addItemToCart = async()=> {
+    
+      if (URLproductId) {
+        const validProductId = URLproductId ? URLproductId.replace(/'/g, '') : null;
+        const validquantity = URLquantity ? parseInt(URLquantity) : 0;
+        try {
+          console.log(URLproductId);
+          const response = await axios.post(
+            'http://localhost:8080/api/v1/cart/addCart',
+            {
+              productId: validProductId,
+              quantity: validquantity,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+  
+          if (response.status === 200) {
+            setURLproductId(null);
+            setURLquantity(null);
+            window.location.href = `/cart`;
+            console.log('Success adding the item');
+          } else {
+            console.log('There is an error in adding the item');
           }
-        });
-        setItems(response.data);
-        console.log(response.data);
-        setProducts(response.data.productList);
-      } catch (error) {
-        console.log(error);
-      }finally {
-        setLoading(false); // Set loading to false once fetching is done (success or error)
+        } catch (error) {
+          console.error('Error adding item:', error);
+        }
       }
     }
+ 
+  
+  
 
-    const productListLength = Items.productList ? Items.productList.length : 0;
-  if(!token){
-    return <SignIn></SignIn>
+
+  const fetchItems = async (token) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setItems(response.data);
+      setProducts(response.data.productList);
+
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteClick = (productId) => {
+    setSelectedProductId(productId);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedProductId(null);
+    setModalIsOpen(false);
+  };
+
+  const handleDeleteClick = async () => {
+
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/v1/cart/deleteCartItem',
+        {
+          productId: selectedProductId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        closeModal();
+        fetchItems(token); // Refresh the cart items after successful deletion
+        navigate('/cart'); // Redirect to the cart page
+      } else {
+        console.log('There is an error in deleting the item');
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+
+  if (!token) {
+    return <SignIn />;
   }
+  const productListLength = Items.productList ? Items.productList.length : 0;
+  console.log(Items.productList)
 
   return (
   <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
@@ -69,7 +158,7 @@ import { ThreeDots } from 'react-loader-spinner';
              </div>
             ) : (
               <>  
-          {Items.productList ? (
+          {Items.productList.length ? (
             <MDBContainer className="py-5 h-100">
               <MDBRow className="justify-content-center align-items-center h-100">
                 <MDBCol size="12">
@@ -124,12 +213,23 @@ import { ThreeDots } from 'react-loader-spinner';
                                     </MDBTypography>
                                   </MDBCol>
                                   <MDBCol md="1" lg="1" xl="1" className="text-end">
-                                    <a href="/home" className="text-muted">
+                                    <a onClick={() => deleteClick(product.productId)}  className="text-muted">
                                       <MDBIcon fas icon="times" />
                                     </a>
-                                    
                                   </MDBCol>
                                 </MDBRow>
+
+                                <MDBModal color="dark" show={modalIsOpen} onHide={closeModal}>
+                                      <MDBModalHeader toggle={closeModal}>Confirm Delete</MDBModalHeader>
+                                      <MDBModalBody>
+                                        Are you sure you want to delete this item?
+                                      </MDBModalBody>
+                                      <MDBModalFooter>
+                                        <button onClick={() => handleDeleteClick(selectedProductId)}>Delete</button>
+                                        <button onClick={closeModal}>Cancel</button>
+                                      </MDBModalFooter>
+                                    </MDBModal>
+
               
                                 <hr className="my-4" />
                                 </>
@@ -139,7 +239,7 @@ import { ThreeDots } from 'react-loader-spinner';
           
                           
           
-          
+        
                             <div className="pt-5">
                               <MDBTypography tag="h6" className="mb-0">
                                 <MDBCardText tag="a" href="/home" className="text-body">
@@ -204,7 +304,11 @@ import { ThreeDots } from 'react-loader-spinner';
                   </MDBCard>
                 </MDBCol>
               </MDBRow>
+
+
             </MDBContainer>
+
+            
           ):(
 
             <MDBContainer className="py-5 h-100">
@@ -235,6 +339,7 @@ import { ThreeDots } from 'react-loader-spinner';
             }
             </>  
     )}
+     
   </section>
   );
   }
