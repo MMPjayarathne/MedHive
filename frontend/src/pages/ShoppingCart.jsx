@@ -25,105 +25,72 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useLocation } from "react-router-dom";
 import SignIn from './SignIn';
 import './pageStyles/ShoppingCart.css';
+import Swal from 'sweetalert2';
 
-export default function ShoppingCart() {
+const ShoppingCart = () => {
   const location = useLocation();
-  const [URLproductId, setURLproductId] = useState([null]);
-  const [URLquantity, setURLquantity] = useState([null]);
   const [Items, setItems] = useState([]);
-  const [token, setToken] = useState(Cookies.get('token') || '');
+  const [token] = useState(Cookies.get('token') || '');
   const [loading, setLoading] = useState(true);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [Products, setProducts] = useState([]); 
+  const [Products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
-  const tempURLproductId = new URLSearchParams(location.search).get("productId");
-  const tempURLquantity = new URLSearchParams(location.search).get("quantity")
+  const URLproductId = localStorage.getItem('cartProductId');
+  const URLquantity = localStorage.getItem('cartProductQuantity');
   const navigate = useNavigate();
-  
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
   useEffect(() => {
-    setURLproductId(tempURLproductId);
-    setURLquantity(tempURLquantity);
-    if (token) {
-      fetchItems(token);
-    }
-    
-    addItemToCart();
-    
-  }, [token]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/cart', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  
-  const addItemToCart = async()=> {
-    
-      if (URLproductId) {
-        const validProductId = URLproductId ? URLproductId.replace(/'/g, '') : null;
-        const validquantity = URLquantity ? parseInt(URLquantity) : 0;
-        try {
-          console.log(URLproductId);
-          const response = await axios.post(
-            'http://localhost:8080/api/v1/cart/addCart',
-            {
-              productId: validProductId,
-              quantity: validquantity,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-  
-          if (response.status === 200) {
-            setURLproductId(null);
-            setURLquantity(null);
-            window.location.href = `/cart`;
-            console.log('Success adding the item');
-          } else {
-            console.log('There is an error in adding the item');
-          }
-        } catch (error) {
-          console.error('Error adding item:', error);
-        }
+        setItems(response.data);
+        setProducts(response.data.productList);
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        setLoading(false);
       }
-    }
- 
-  
-  
+    };
+    fetchData();
+  }, [URLproductId, URLquantity, navigate, token]);
 
-
-  const fetchItems = async (token) => {
+  const showAlertWithTwoButtons = async (cartItemId) => {
+    const loadingSwal = Swal.fire({
+      title: 'Delete Confirmation',
+      text: 'Do you want to remove this item from the cart.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      showLoaderOnConfirm: true, // Show loading indicator in the confirm button
+    });
+  
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/cart`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setItems(response.data);
-      setProducts(response.data.productList);
-
+      const result = await loadingSwal;
+      if (result.isConfirmed) {
+        await deleteClick(cartItemId);
+        await Swal.fire('Deleted', 'Item has been removed from the cart.', 'success');
+        window.location.href = `/cart`;
+      }
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      // Handle any errors that might occur during the loading and deleting process
+      console.error(error);
+      Swal.fire('Error', 'An error occurred while deleting the item.', 'error');
     }
   };
-
-  const deleteClick = (productId) => {
-    setSelectedProductId(productId);
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setSelectedProductId(null);
-    setModalIsOpen(false);
-  };
-
-  const handleDeleteClick = async () => {
-
+  
+  const deleteClick = async(cartItemId) => {
     try {
+      console.log(cartItemId);
       const response = await axios.post(
         'http://localhost:8080/api/v1/cart/deleteCartItem',
         {
-          productId: selectedProductId,
+          cartItemId: cartItemId,
         },
         {
           headers: {
@@ -131,11 +98,10 @@ export default function ShoppingCart() {
           },
         }
       );
+      console.log("done")
 
       if (response.status === 200) {
-        closeModal();
-        fetchItems(token); // Refresh the cart items after successful deletion
-        navigate('/cart'); // Redirect to the cart page
+        navigate('/cart');
       } else {
         console.log('There is an error in deleting the item');
       }
@@ -144,11 +110,14 @@ export default function ShoppingCart() {
     }
   };
 
+
+ 
+
   if (!token) {
     return <SignIn />;
   }
+
   const productListLength = Items.productList ? Items.productList.length : 0;
-  console.log(Items.productList)
 
   return (
   <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
@@ -158,7 +127,7 @@ export default function ShoppingCart() {
              </div>
             ) : (
               <>  
-          {Items.productList.length ? (
+          {Items.productList && productListLength != 0 ? (
             <MDBContainer className="py-5 h-100">
               <MDBRow className="justify-content-center align-items-center h-100">
                 <MDBCol size="12">
@@ -177,7 +146,7 @@ export default function ShoppingCart() {
                             </div>
           
                             <hr className="my-4" />
-
+                              <>
                             {Products.map((product) => (
 
                             
@@ -213,27 +182,18 @@ export default function ShoppingCart() {
                                     </MDBTypography>
                                   </MDBCol>
                                   <MDBCol md="1" lg="1" xl="1" className="text-end">
-                                    <a onClick={() => deleteClick(product.productId)}  className="text-muted">
+                                    <a onClick={() => showAlertWithTwoButtons(product.cartItemId)}  className="text-muted">
                                       <MDBIcon fas icon="times" />
                                     </a>
                                   </MDBCol>
                                 </MDBRow>
 
-                                <MDBModal color="dark" show={modalIsOpen} onHide={closeModal}>
-                                      <MDBModalHeader toggle={closeModal}>Confirm Delete</MDBModalHeader>
-                                      <MDBModalBody>
-                                        Are you sure you want to delete this item?
-                                      </MDBModalBody>
-                                      <MDBModalFooter>
-                                        <button onClick={() => handleDeleteClick(selectedProductId)}>Delete</button>
-                                        <button onClick={closeModal}>Cancel</button>
-                                      </MDBModalFooter>
-                                    </MDBModal>
-
+                        
               
                                 <hr className="my-4" />
                                 </>
                                 ))}
+                                </>
           
                           
           
@@ -341,5 +301,7 @@ export default function ShoppingCart() {
     )}
      
   </section>
-  );
-  }
+   );
+  };
+
+  export default ShoppingCart;

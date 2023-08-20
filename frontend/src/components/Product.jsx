@@ -9,7 +9,7 @@ import {
   import { useNavigate } from 'react-router-dom';
   import axios from 'axios';
   import React, { useEffect, useState } from 'react';
-
+  import Cookies from 'js-cookie';
 
   const OuterContainer = styled.div`
   flex-direction: column;
@@ -94,10 +94,43 @@ import {
 `;
   
   const Product = ({ item }) => {
+    const [token] = useState(Cookies.get('token') || '');
 
     const handleProductClick = () => {
       // Use the Link component to navigate to the product page
       window.location.href = `/product?productId=${item._id}`;
+    };
+
+    const handleAddToCart = async () =>{
+      try{
+            if (item._id) {
+              const productId = item._id;
+              const productQuntity = 1;
+              const response = await axios.post(
+                'http://localhost:8080/api/v1/cart/addCart',
+                {
+                  productId: productId,
+                  quantity: productQuntity,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (response.status === 200) {
+                console.log('Success adding the item');
+                window.location.href = `/cart`;
+              } else {
+                console.log('There is an error in adding the item');
+              }
+            }
+            
+          }catch(error){
+            console.log("The error: ",error);
+          }
+
     };
   
 
@@ -110,7 +143,7 @@ import {
                 <Image src={src} />
                 <Info>
                 <Icon>
-                    <ShoppingCartOutlined/>
+                    <ShoppingCartOutlined onClick={handleAddToCart}/>
                 </Icon>
                 <Icon>
                     <SearchOutlined onClick={handleProductClick} />

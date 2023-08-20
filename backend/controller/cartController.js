@@ -25,13 +25,14 @@ const getCartByUserId = async (req, res) => {
                     const product = await Product.findById(cartItem.Product); // Assuming the model is named "Product"
 
                     temporaryList.push({
-                        productId: cartItemId,
+                        cartItemId: cartItemId,
                         name: product.Name,
                         quantity: cartItem.Quantity,
                         price: product.Price,
                         image: product.Image1,
                     });
                 } catch (error) {
+                    console.log(error)
                     console.log("Error fetching cart item or product:", error);
                 }
             }
@@ -43,7 +44,7 @@ const getCartByUserId = async (req, res) => {
 
             res.send(data);
         } else {
-            res.status(400).send("There is a server issue. Try again later");
+            res.status(400).send("There is a no cart. Try add something");
         }
     } catch (error) {
         console.log(error);
@@ -68,9 +69,8 @@ const store = async(req,res)=>{
         const cart = await Cart.findByUser(userId);
        // const wantProduct = await Product.findById(productId);
         //console.log("the cart" , cart)
-        const totalPrice = cart.TotalPrice || 0;
-        let newTotal = totalPrice + product.Price * quantity;
-       // console.log(" quentity : ",req.body.Quantity)
+      
+       //console.log(" quentity : ",req.body.Quantity)
         try {
             // Find the product by ID and update its Quantity field
             const Newquantity =  product.Quantity - quantity
@@ -86,7 +86,8 @@ const store = async(req,res)=>{
        
         if(cart){ //when cart is available
             console.log("Hello")
-
+            const totalPrice = cart.TotalPrice || 0;
+            let newTotal = totalPrice + product.Price * quantity;
             const existingCartItemsIds = cart.CartItems;
            // const existingCartItems = await CartItems.findById(existingCartItemsId);
            for (const cartItemId of existingCartItemsIds) {
@@ -213,36 +214,25 @@ const store = async(req,res)=>{
 }
 
 const deleteCartItemByUserId = async (req, res) => {
-    try{
-        const productId = req.body.productId;
-        const token = req.headers.authorization.split(' ')[1]; // Extract the token from the Authorization header
-        const decodedUser =  jwt.verify(token, secret);
-        console.log(decodedUser);
-        const userId = decodedUser.userId;
-        const cart = await Cart.findByUser(userId);
-        const product = await Product.findById(productId);
-        const existingCartItemsIds = cart.CartItems;
+
+  try{
+    const cartItemId = req.body.cartItemId;
+    const token = req.headers.authorization.split(' ')[1]; // Extract the token from the Authorization header
+    const decodedUser =  jwt.verify(token, secret);
+    //console.log(decodedUser);
+    const userId = decodedUser.userId;
+    const cart = await Cart.findByUser(userId);
+
+    const cartItems = await CartItems.findById(cartItemId);
+    console.log("CartItems: ",cartItems)
+    const productId = cartItems.Product;
+    console.log("productId: ", productId)
+    const deletedCartItem = await CartItems.findByIdAndDelete(cartItemId);
+
+    const product = await Product.findById(productId)
   
-        // const existingCartItems = await CartItems.findById(existingCartItemsId);
-        for (const cartItemId of existingCartItemsIds) {
-         try {
-           const existingCartItems = await CartItems.findById(cartItemId);
-           if (!existingCartItems) { 
-             console.log(`Cart item with ID ${cartItemId} not found.`);
-             continue; // Skip this iteration and move to the next item
-           }
-       
-           const existingProductId = existingCartItems.Product.toString();
-           //console.log(existingProductId);
-           //console.log(productId);
-       
-           if (existingProductId === productId) {
-             console.log(cartItemId);
-             try {
-                const cartItems = await CartItems.findById(cartItemId);
-                const deletedCartItem = await CartItems.findByIdAndDelete(cartItemId);
-                //console.log(cartItems.Quantity);
-                const newTotal = cart.TotalPrice - cartItems.Quantity * product.Price;
+    console.log("Product: ", product)
+    const newTotal = cart.TotalPrice - cartItems.Quantity * product.Price;
                 //console.log("new Total: ", newTotal);
                 if (!deletedCartItem) {
                   return res.status(404).send('Cart item not found');
@@ -256,7 +246,7 @@ const deleteCartItemByUserId = async (req, res) => {
                     },
                     { new: true }
                   );
-                    const productNewQuantity = product.Quantity + cartItems.Quantity;
+                  const productNewQuantity = product.Quantity + cartItems.Quantity;
                   const updatedProduct = await Product.findByIdAndUpdate(
                     productId,
                     {
@@ -268,26 +258,90 @@ const deleteCartItemByUserId = async (req, res) => {
                     return res.status(500).send('Error deleteing the existing cart');
                   }
                return res.status(200).send("Successfully deleted from the existing cart")
-             } catch (error) {
-               console.log(error);
-               return res.status(500).send('Error deleteing the existing cart');
-             }
-           }
-         } catch (error) {
-           console.log(error);
-           return res.status(500).send('Error fetching cart item from the database');
-         }
-       }
+  
+
+  }catch(error){
+    console.log(error);
+  }
+
+
+
+
+    // try{
+    //     const productId = req.body.productId;
+    //     const token = req.headers.authorization.split(' ')[1]; // Extract the token from the Authorization header
+    //     const decodedUser =  jwt.verify(token, secret);
+    //     console.log(decodedUser);
+    //     const userId = decodedUser.userId;
+    //     const cart = await Cart.findByUser(userId);
+    //     const product = await Product.findById(productId);
+    //     const existingCartItemsIds = cart.CartItems;
+  
+    //     // const existingCartItems = await CartItems.findById(existingCartItemsId);
+    //     for (const cartItemId of existingCartItemsIds) {
+    //      try {
+    //        const existingCartItems = await CartItems.findById(cartItemId);
+    //        if (!existingCartItems) { 
+    //          console.log(`Cart item with ID ${cartItemId} not found.`);
+    //          continue; // Skip this iteration and move to the next item
+    //        }
+       
+    //        const existingProductId = existingCartItems.Product.toString();
+    //        //console.log(existingProductId);
+    //        //console.log(productId);
+       
+    //        if (existingProductId === productId) {
+    //          console.log(cartItemId);
+    //          try {
+    //             const cartItems = await CartItems.findById(cartItemId);
+    //             const deletedCartItem = await CartItems.findByIdAndDelete(cartItemId);
+    //             //console.log(cartItems.Quantity);
+    //             const newTotal = cart.TotalPrice - cartItems.Quantity * product.Price;
+    //             //console.log("new Total: ", newTotal);
+    //             if (!deletedCartItem) {
+    //               return res.status(404).send('Cart item not found');
+    //             }
+              
+    //             const updatedCart = await Cart.findByIdAndUpdate(
+    //                 cart._id,
+    //                 {
+    //                   $set:{TotalPrice:newTotal},
+    //                   $pull: { CartItems: cartItemId },
+    //                 },
+    //                 { new: true }
+    //               );
+    //                 const productNewQuantity = product.Quantity + cartItems.Quantity;
+    //               const updatedProduct = await Product.findByIdAndUpdate(
+    //                 productId,
+    //                 {
+    //                     $set:{Quantity:productNewQuantity}
+    //                 },
+    //                 {new:true}
+    //               );
+    //               if(!updatedProduct){
+    //                 return res.status(500).send('Error deleteing the existing cart');
+    //               }
+    //            return res.status(200).send("Successfully deleted from the existing cart")
+    //          } catch (error) {
+    //            console.log(error);
+    //            return res.status(500).send('Error deleteing the existing cart');
+    //          }
+    //        }
+    //      } catch (error) {
+    //        console.log(error);
+    //        return res.status(500).send('Error fetching cart item from the database');
+    //      }
+    //    }
        
 
 
 
-    }
-    catch(error){
-        console.log(error);
-        res.status(500).send("Invalid Authentication")
+    // }
+    // catch(error){
+    //     console.log(error);
+    //     res.status(500).send("Invalid Authentication")
 
-    }
+    // }
 
 
 
