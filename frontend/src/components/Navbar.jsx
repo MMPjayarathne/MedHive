@@ -9,6 +9,7 @@ import { Search } from '@mui/icons-material';
 import styled from "styled-components";
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 const Button = styled(Link)`
   
@@ -32,9 +33,40 @@ const Button = styled(Link)`
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [token, setToken] = useState(null);
+  const [Products, setProducts] = useState([]);
   const name = localStorage.getItem('name');
   const id = localStorage.getItem('id');
   const isAdmin = localStorage.getItem('isAdmin');
+
+  useEffect(() => {
+    const temptoken = Cookies.get('token');
+    setToken(temptoken)
+  
+  }, []);
+
+  useEffect(() => {
+    if(token){
+      const fetchData = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/v1/cart', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setProducts(response.data.productList);
+      
+        } catch (error) {
+          console.error(error);
+        
+        }
+      };
+    fetchData();
+  }
+  }, [token]);
+  const productListLength =Products ? Products.length : 0;
+  console.log(productListLength)
+
+ 
     
   // useEffect(() => {
   //   const retrievedToken = getTokenFromCookie();
@@ -42,11 +74,7 @@ const Navbar = () => {
   //   console.log(retrievedToken);
   // }, []);
 
-  useEffect(() => {
-    const temptoken = Cookies.get('token');
-    setToken(temptoken)
-  
-  }, []);
+ 
 
 
   const handleMedhiveClick = () => {
@@ -281,7 +309,7 @@ const Navbar = () => {
                     isAdmin=="false"?(
                         <>
                         <IconButton color="inherit" sx={{ mx: 2 }}>
-                            <Badge badgeContent={4} color="error">
+                            <Badge badgeContent={productListLength} color="error">
                             <ShoppingCartIcon onClick={handleCart} />
                             </Badge>
                         </IconButton>

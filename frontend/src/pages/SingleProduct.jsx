@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Paper, Typography, Button,TextField } from '@mui/material';
 import { styled } from '@mui/system';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import { useLocation } from "react-router-dom";
 import { ThreeDots } from 'react-loader-spinner';
 import StarIcon from '@mui/icons-material/Star';
@@ -29,9 +30,42 @@ const ProductPage = () => {
     const [quantity, setQuantity] = useState(1); 
     const defaultProductId = "64bc2c3f647893e862894de3";
     const URLproductId = new URLSearchParams(location.search).get("productId");
-
+    const [token] = useState(Cookies.get('token') || '');
     const productId = URLproductId || defaultProductId
     console.log(productId);
+
+    const handleAddToCart = async (item,quantity) =>{
+      try{
+            if (item) {
+              const productId = item;
+              const productQuntity = quantity;
+              const response = await axios.post(
+                'http://localhost:8080/api/v1/cart/addCart',
+                {
+                  productId: productId,
+                  quantity: productQuntity,
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
+
+              if (response.status === 200) {
+                console.log('Success adding the item');
+                window.location.href = `/cart`;
+              } else {
+                console.log('There is an error in adding the item');
+              }
+            }
+            
+          }catch(error){
+            console.log("The error: ",error);
+          }
+
+    };
+
    
     useEffect(() => {
       const fetchProduct = async () => {
@@ -45,6 +79,7 @@ const ProductPage = () => {
             setLoading(false); // Set loading to false once fetching is done (success or error)
           }
       };
+
   
       fetchProduct();
     }, [productId]);
@@ -126,7 +161,7 @@ const ProductPage = () => {
               
               <Grid container alignItems="center"  justifyContent="space-between">
                  <Grid item>
-                    <Button variant="contained" color="primary">
+                    <Button onClick = {()=>{handleAddToCart(product._id,quantity)}} variant="contained" color="primary">
                       Add to Cart
                     </Button>
                   </Grid>
