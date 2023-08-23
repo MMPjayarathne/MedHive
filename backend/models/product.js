@@ -4,9 +4,13 @@ const { Category } = require('./category')
 const productSchema = mongoose.Schema({
     Name: {
         type: String,
-        required: true
+        required: true,
+        text: true
     },
-    Description: String,
+    Description: {
+      type: String,
+      text: true // Create a text index for this field
+    },
     Type: {
         type: String,
         enum: ['OTC', 'NONOTC'],
@@ -53,6 +57,7 @@ productSchema.virtual('id').get(function(){
 productSchema.set('toJSON', {
   virtuals: true,
 });
+
 
 
 

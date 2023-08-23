@@ -32,6 +32,7 @@ const Store = () => {
 
   const location = useLocation();
   const categoryId = new URLSearchParams(location.search).get("categoryId");
+  const query =  new URLSearchParams(location.search).get("query");
   console.log(categoryId);
   useEffect(() => {
     const fetchItems = async () => {
@@ -54,7 +55,27 @@ const Store = () => {
           console.log(error);
         }
 
-      }else{
+      }else if(query){
+
+        try{
+            const response = await axios.get(
+              `http://localhost:8080/api/v1/products/search?q=${query}`
+            );
+
+
+            if (response.status === 200) {
+              console.log('Success adding the item');
+              setItems(response.data);
+            } else {
+              console.log('There is an error in adding the item');
+            }
+          
+          
+        }catch(error){
+          console.log("The error: ",error);
+        }
+      }
+      else{
 
         try {
           const response = await axios.get(

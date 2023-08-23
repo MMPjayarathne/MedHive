@@ -150,18 +150,27 @@ const getProducts = async (req, res) =>{
     res.send(products);
   }
 
+  
   const searchProducts = async (req, res) => {
     try {
       const searchQuery = req.query.q;
+      console.log('hello search');
   
-      Product.find({ $text: { $search: searchQuery } })
-        .select('-_id -__v') // Exclude fields from the response if needed
-        .exec((err, products) => {
-          if (err) {
-            throw err;
-          }
-          res.send(products);
-        });
+      const query = {
+        $text: { $search: `"${searchQuery}"` }
+      };
+  
+      const projection = {
+        _id: 1, // Include _id field
+        Name: 1,
+        Image1:1,
+        Price:1,
+        Brand:1 // Include Name field
+      };
+  
+      const cursor = await Product.find(query).select(projection);
+  
+      res.send(cursor);
     } catch (error) {
       res.status(500).json({
         error: error.message,
@@ -169,6 +178,9 @@ const getProducts = async (req, res) =>{
       });
     }
   };
+  
+  
+  
 
 
   const getProductsByCategory= async (req, res) => {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Badge, Drawer, List, ListItem, ListItemIcon, ListItemText,Box,TextField } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Badge, Drawer, List, ListItem, ListItemIcon, ListItemText,Box,TextField, Input } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -37,6 +37,7 @@ const Navbar = () => {
   const name = localStorage.getItem('name');
   const id = localStorage.getItem('id');
   const isAdmin = localStorage.getItem('isAdmin');
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     const temptoken = Cookies.get('token');
@@ -137,20 +138,34 @@ const Navbar = () => {
   const handleSearchToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+  const handleChange = (e) => {
+    console.log('Input value changed:', e.target.value);
+    e.preventDefault();
+    setInputValue(e.target.value);
+  };
+
+  const handleSearchEnter = async (value) =>{
+    console.log("search")
+    window.location.href = `../store?query=${value}`;
+  };
 
   const drawerItems = (
     <List sx={{ display: 'block', width: '200px' }}>
-    <ListItem button>
-        <TextField
-            variant="outlined"
-            size="small"
-            placeholder="Search"
-            InputProps={{
-            startAdornment: <SearchIcon />,
-            sx: { backgroundColor: 'white', borderRadius: '4px' },
-            }}
-        />
-    </ListItem>
+    <ListItem>
+      <TextField
+        variant="outlined"
+        size="small"
+        placeholder="Search"
+        value={inputValue}
+        onChange={handleChange}
+        InputProps={{
+          startAdornment: <SearchIcon onClick={() => handleSearchEnter(inputValue)} />,
+          sx: { backgroundColor: 'white', borderRadius: '4px' },
+        }}
+      />
+      
+</ListItem>
+
     <ListItem button onClick={handleHomeClick}>
         <ListItemText primary="Home" />
     </ListItem>
@@ -222,8 +237,15 @@ const Navbar = () => {
                     variant="outlined"
                     size="small"
                     placeholder="Search"
+                    value={inputValue}
+                    onChange={handleChange}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') {
+                        handleSearchEnter(inputValue);
+                      }
+                    }}
                     InputProps={{
-                    startAdornment: <SearchIcon />,
+                    startAdornment: <SearchIcon onClick={() => handleSearchEnter(inputValue)}/>,
                     sx: { mr: 3, backgroundColor: 'white', borderRadius: '4px',display: { xs: 'none', sm: 'flex', md: 'flex' },
                     flexDirection: 'row',
                     justifyContent: 'flex-end',
