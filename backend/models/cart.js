@@ -11,10 +11,20 @@ const cartSchema = mongoose.Schema({
     TotalPrice: {
         type: Number,
     },
+    NeedPrescription:{
+        type:Boolean,
+        default:false,
+    }, 
+    NoOfNONOTC:{
+        type:Number,
+        default:0,
+    },
+
     User:  { 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users'
     },
+
     CreatedDate: { type: Date, default: Date.now },
 })
 

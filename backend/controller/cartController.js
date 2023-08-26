@@ -40,6 +40,7 @@ const getCartByUserId = async (req, res) => {
             const data = {
                 totalPrice: cart.TotalPrice,
                 productList: temporaryList,
+                needPrescription: cart.NeedPrescription,
             };
 
             res.send(data);
@@ -63,6 +64,7 @@ const store = async(req,res)=>{
         const productId = req.body.productId;
         const quantity = req.body.quantity;
         const product = await Product.findById(productId);
+        const needPrescription = product.Type === 'NONOTC';
         if (!product) {
             return res.status(404).send('Product not found');
           }      
@@ -88,6 +90,7 @@ const store = async(req,res)=>{
             console.log("Hello")
             const totalPrice = cart.TotalPrice || 0;
             let newTotal = totalPrice + product.Price * quantity;
+            const noOfNONOTC = needPrescription? cart.NoOfNONOTC + 1 : cart.NoOfNONOTC;
             const existingCartItemsIds = cart.CartItems;
            // const existingCartItems = await CartItems.findById(existingCartItemsId);
            for (const cartItemId of existingCartItemsIds) {
@@ -115,7 +118,7 @@ const store = async(req,res)=>{
                 const updatedCart = await Cart.findByIdAndUpdate(
                     cart._id,
                     {
-                    $set: { TotalPrice: newTotal }, // If you want to update TotalPrice as well
+                    $set: { TotalPrice: newTotal,NeedPrescription:needPrescription, NoOfNONOTC:noOfNONOTC }, // If you want to update TotalPrice as well
                     },
                     { new: true }
                 );
@@ -146,7 +149,7 @@ const store = async(req,res)=>{
             cart._id,
             {
               $push: { CartItems: cartItems },
-              $set: { TotalPrice: newTotal }, // If you want to update TotalPrice as well
+              $set: { TotalPrice: newTotal,NeedPrescription:needPrescription,NoOfNONOTC:noOfNONOTC  }, // If you want to update TotalPrice as well
             },
             { new: true }
           );
@@ -165,7 +168,7 @@ const store = async(req,res)=>{
         else{
             console.log("in else")
             try{
-            
+                const noOfNONOTC = needPrescription? 1: 0;
                
                 const product = await Product.findById(productId);
                 const total =  quantity * product.Price; 
@@ -187,8 +190,8 @@ const store = async(req,res)=>{
                         CartItems: cartItems,
                         User : userId,
                         TotalPrice: total,
-
-    
+                        NeedPrescription:needPrescription,
+                        NoOfNONOTC:noOfNONOTC ,
                       });
                     cart = await cart.save();
 
@@ -227,9 +230,16 @@ const deleteCartItemByUserId = async (req, res) => {
     console.log("CartItems: ",cartItems)
     const productId = cartItems.Product;
     console.log("productId: ", productId)
+
     const deletedCartItem = await CartItems.findByIdAndDelete(cartItemId);
 
     const product = await Product.findById(productId)
+
+    const needPrescription = product.Type === 'NONOTC';
+
+    const newNoOfNONOTC = needPrescription? cart.NoOfNONOTC - cartItems.Quantity : cart.NoOfNONOTC;
+
+    const needPrescriptionForCart= newNoOfNONOTC==0? false : true;
   
     console.log("Product: ", product)
     const newTotal = cart.TotalPrice - cartItems.Quantity * product.Price;
@@ -241,7 +251,7 @@ const deleteCartItemByUserId = async (req, res) => {
                 const updatedCart = await Cart.findByIdAndUpdate(
                     cart._id,
                     {
-                      $set:{TotalPrice:newTotal},
+                      $set:{TotalPrice:newTotal, NeedPrescription:needPrescriptionForCart , NoOfNONOTC:newNoOfNONOTC},
                       $pull: { CartItems: cartItemId },
                     },
                     { new: true }
@@ -255,7 +265,7 @@ const deleteCartItemByUserId = async (req, res) => {
                     {new:true}
                   );
                   if(!updatedProduct){
-                    return res.status(500).send('Error deleteing the existing cart');
+                    return res.status(500).send('Error updating the product');
                   }
                return res.status(200).send("Successfully deleted from the existing cart")
   
@@ -264,7 +274,77 @@ const deleteCartItemByUserId = async (req, res) => {
     console.log(error);
   }
 
+}
 
+const deleteCartByUserId=async(req,res)=>{
+
+  try{
+    const token = req.headers.authorization.split(' ')[1]; // Extract the token from the Authorization header
+    const decodedUser =  jwt.verify(token, secret);
+    //console.log(decodedUser);
+    const userId = decodedUser.userId;
+    const cart = await Cart.findByUser(userId);
+
+    if(cart){
+      const existingCartItemsIds = cart.CartItems;
+           // const existingCartItems = await CartItems.findById(existingCartItemsId);
+           for (const cartItemId of existingCartItemsIds) {
+
+            try{
+              const existingCartItems = await CartItems.findById(cartItemId);
+              if (!existingCartItems) { 
+                console.log(`Cart item with ID ${cartItemId} not found.`);
+                continue; // Skip this iteration and move to the next item
+              }
+              const quantityThatNeedToBeRestored = existingCartItems.Quantity
+              const productAffected = existingCartItems.Product;
+              const updatedProduct = await Product.findByIdAndUpdate(
+                productAffected,
+                {
+                  $inc: { Quantity: quantityThatNeedToBeRestored } // Using $inc to increment the Quantity field
+                },
+                { new: true }
+              );
+
+
+              if(!updatedProduct){
+                return res.status(500).send('Error updating the product quantity of: ',productAffected);
+              }
+
+              const deletedCartItem = await CartItems.findByIdAndDelete(cartItemId);
+              if(!deletedCartItem){
+
+                return res.status(500).send('Error deleteing the cartItem: ', cartItemId);
+
+              }
+
+            }catch(error){
+              console.log(error);
+              return res.status(400).send(error);
+            }
+
+
+           }
+           const deletedCart = await Cart.findByIdAndDelete(cart._id);
+           if(!deletedCart){
+            return res.status(500).send('Error deleteing the cart ');
+           }
+
+           return res.status(200).send('Successfully deleted the cart');
+
+    }else{
+      return res.status(500).send("Cannot find the cart. May be a server issue.")
+    }
+
+
+  }catch(error){
+    console.log(error);
+    return res.status(500).send(error);
+  }
+
+
+
+}
 
 
     // try{
@@ -346,12 +426,13 @@ const deleteCartItemByUserId = async (req, res) => {
 
 
 
-}
+
 
 
 module.exports = {
     getCartByUserId,
     store,
-    deleteCartItemByUserId
+    deleteCartItemByUserId,
+    deleteCartByUserId,
 
 };

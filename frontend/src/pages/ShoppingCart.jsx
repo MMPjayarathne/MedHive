@@ -26,6 +26,7 @@ import { useLocation } from "react-router-dom";
 import SignIn from './SignIn';
 import './pageStyles/ShoppingCart.css';
 import Swal from 'sweetalert2';
+import { position } from '@chakra-ui/react';
 
 const ShoppingCart = () => {
   const location = useLocation();
@@ -49,6 +50,7 @@ const ShoppingCart = () => {
         });
 
         setItems(response.data);
+        console.log("cart",response.data);
         setProducts(response.data.productList);
         setLoading(false);
       } catch (error) {
@@ -59,7 +61,7 @@ const ShoppingCart = () => {
     fetchData();
   }, [URLproductId, URLquantity, navigate, token]);
 
-  const showAlertWithTwoButtons = async (cartItemId) => {
+  const showAlertToDeleteCartItem = async (cartItemId) => {
     const loadingSwal = Swal.fire({
       title: 'Delete Confirmation',
       text: 'Do you want to remove this item from the cart.',
@@ -107,6 +109,54 @@ const ShoppingCart = () => {
       }
     } catch (error) {
       console.error('Error deleting item:', error);
+    }
+  };
+
+  const showAlertToDeleteCart = async () => {
+    const loadingSwal = Swal.fire({
+      title: 'Delete Confirmation',
+      text: 'Do you Delete the whole cart.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+      showLoaderOnConfirm: true, // Show loading indicator in the confirm button
+    });
+  
+    try {
+      const result = await loadingSwal;
+      if (result.isConfirmed) {
+        await deleteClickForCart();
+        await Swal.fire('Deleted', 'Cart has been removed.', 'success');
+        window.location.href = `/cart`;
+      }
+    } catch (error) {
+      // Handle any errors that might occur during the loading and deleting process
+      console.error(error);
+      Swal.fire('Error', 'An error occurred while deleting the item.', 'error');
+    }
+  };
+
+  const deleteClickForCart = async() => {
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/v1/cart/deleteCart',
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("done")
+
+      if (response.status === 200) {
+        navigate('/cart');
+      } else {
+        console.log('There is an error in deleting the Cart');
+      }
+    } catch (error) {
+      console.error('Error', error);
     }
   };
 
@@ -182,7 +232,7 @@ const ShoppingCart = () => {
                                     </MDBTypography>
                                   </MDBCol>
                                   <MDBCol md="1" lg="1" xl="1" className="text-end">
-                                    <a onClick={() => showAlertWithTwoButtons(product.cartItemId)}  className="text-muted">
+                                    <a onClick={() => showAlertToDeleteCartItem(product.cartItemId)}  className="text-muted">
                                       <MDBIcon fas icon="times" />
                                     </a>
                                   </MDBCol>
@@ -206,6 +256,8 @@ const ShoppingCart = () => {
                                   <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back
                                   to shop
                                 </MDBCardText>
+                                <button type="button" class="btn btn-danger" style={{ float: 'right' }} onClick={() => showAlertToDeleteCart()} >Delete</button>
+
                               </MDBTypography>
                             </div>
                           </div>
@@ -254,9 +306,20 @@ const ShoppingCart = () => {
                               </MDBTypography>
                               <MDBTypography tag="h5">Rs. {Items.totalPrice} /=</MDBTypography>
                             </div>
-                            <MDBBtn color="dark" block size="lg">
-                              Register
-                            </MDBBtn>
+                            {
+                              Items.needPrescription?(
+                                  <MDBBtn color="dark" block size="lg">
+                                  Enter the prescription
+                                </MDBBtn>
+
+                              ):(
+                                    <MDBBtn color="dark" block size="lg">
+                                  Buy
+                                </MDBBtn>
+                              )
+
+                            }
+                            
                           </div>
                         </MDBCol>
                       </MDBRow>
