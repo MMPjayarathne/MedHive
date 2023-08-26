@@ -3,6 +3,7 @@ import {
     LocalMallOutlined,
     SearchOutlined,
     ShoppingCartOutlined,
+    Favorite,
   } from "@mui/icons-material";
   import styled from "styled-components";
   import { BrowserRouter as Router, Route,Link } from 'react-router-dom';
@@ -142,21 +143,47 @@ import {
                 <Circle />
                 <Image src={src} />
                 <Info>
-                <Icon>
-                    <ShoppingCartOutlined onClick={handleAddToCart}/>
-                </Icon>
-                <Icon>
-                    <SearchOutlined onClick={handleProductClick} />
-                </Icon>
-                <Icon>
-                    <LocalMallOutlined/>
-                </Icon>
+
+                {item.Quantity==0?(
+
+                      <>
+
+                      <Icon>
+                       <Favorite/>
+                      </Icon>
+                      <Icon>
+                      <SearchOutlined onClick={handleProductClick} />
+                      </Icon>
+                      </>
+
+                    ):(
+                      <>
+                        <Icon>
+                        <ShoppingCartOutlined onClick={handleAddToCart}/>
+                    </Icon>
+                    <Icon>
+                        <SearchOutlined onClick={handleProductClick} />
+                    </Icon>
+                    <Icon>
+                        <LocalMallOutlined/>
+                    </Icon>
+                    </>
+                    )}
+                
                 </Info>
             </Container>
             <Description>
                     <h3>{item.Brand}</h3>
                     <p>({item.Name})</p>
+
+                    {item.Quantity==0?(
+
+                        <p style={{color: "red"}}>Out of Stock</p>
+
+                    ):(
                     <p> <br/>Rs.{item.Price}</p>
+                    )}
+                    
                 </Description>
     </OuterContainer>
     </>

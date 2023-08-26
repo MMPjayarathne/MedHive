@@ -32,6 +32,8 @@ const ProductPage = () => {
     const URLproductId = new URLSearchParams(location.search).get("productId");
     const [token] = useState(Cookies.get('token') || '');
     const productId = URLproductId || defaultProductId
+    const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
+    const [prescriptionFile, setPrescriptionFile] = useState(null);
     console.log(productId);
 
     const handleAddToCart = async (item,quantity) =>{
@@ -95,6 +97,24 @@ const ProductPage = () => {
     };
 
     const productType = product? product.Type : null
+
+    const handleShowPrescriptionForm = () => {
+      setShowPrescriptionForm(true);
+    };
+  
+    const handleBuyWithPrescription = () => {
+      // You can add your logic here to handle the buy action with prescription
+      // For example, you can send the prescriptionFile to the server
+      console.log('Buy with prescription', prescriptionFile);
+    };
+    const [selectedFileName, setSelectedFileName] = useState('');
+
+    const handlePrescriptionFileChange = (event) => {
+      const file = event.target.files[0];
+      setPrescriptionFile(file);
+      setSelectedFileName(file ? file.name : '');
+    };
+  
     
   return (
     <CustomContainer maxWidth="lg">
@@ -160,7 +180,23 @@ const ProductPage = () => {
             {productType==="OTC"?(
               
               <Grid container alignItems="center"  justifyContent="space-between">
-                 <Grid item>
+                {
+                  product.Quantity == 0?(
+
+                    <>
+                    <Typography variant="h7" style={{color:"red"}} gutterBottom>
+                    Out Of Stock
+                    </Typography><br/>
+                    <Grid item>
+                    <Button variant="contained" color="primary">
+                      Add to Wish List
+                    </Button>
+                  </Grid>
+                  </>
+
+                  ):(
+                    <>
+                    <Grid item>
                     <Button onClick = {()=>{handleAddToCart(product._id,quantity)}} variant="contained" color="primary">
                       Add to Cart
                     </Button>
@@ -170,11 +206,47 @@ const ProductPage = () => {
                       Buy
                     </Button>
                     </Grid>
+                    </>
+                  )
+                }
+                 
             </Grid>
             ):(
-              <Button variant="contained" color="primary">
+              
+            <Grid container alignItems="center"  justifyContent="space-between">
+            <Grid item>
+               <Button onClick = {()=>{handleAddToCart(product._id,quantity)}} variant="contained" color="primary">
+                 Add to Cart
+               </Button>
+             </Grid>
+             <Grid item>
+             <Button variant="contained" color="primary" onClick={handleShowPrescriptionForm}>
               Enter Prescription
             </Button>
+               </Grid>
+          </Grid>
+          
+            )}
+            <br/><br/>
+            {/* Prescription form */}
+            {showPrescriptionForm && (
+              <Grid item xs={12}>
+                <input
+                  type="file"
+                  accept="image/*,.pdf,.doc,.docx"
+                  onChange={handlePrescriptionFileChange}
+                />
+                {selectedFileName && (
+                  <p>Selected File: {selectedFileName}</p>
+                )}
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleBuyWithPrescription}
+                >
+                  Buy
+                </Button>
+              </Grid>
             )}
             
           </Grid>
