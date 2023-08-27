@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Grid, Paper, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import {
@@ -36,6 +37,7 @@ const CheckoutPage = () => {
   const [orderItems, setOrderItems] = useState(JSON.parse(items));
   const [errors, setErrors] = useState({});
   const [fieldError,setFieldError] = useState("")
+  const navigate = useNavigate();
 
   const cartItems = []; // Replace with your actual cart items
   const totalAmount = 0; // Replace with your actual total amount
@@ -57,22 +59,30 @@ console.log("Items",orderItems);
     if (!email) {
         newErrors.email = 'Email is required';
       }
-      if (!cardNumber) {
-        newErrors.cardNumber = 'Card Number is required';
-      }
-      if (!expiryDate) {
-        newErrors.expiryDate = 'Expiry Date is required';
-      }
-      if (!cvv) {
-        newErrors.cvv = 'CVV is required';
-      }
+
+    if(paymentType === 'credit' || paymentType === 'debit'){
+                if (!cardNumber) {
+                    newErrors.cardNumber = 'Card Number is required';
+                    console.log("Card number is required")
+                }
+                if (!expiryDate) {
+                    newErrors.expiryDate = 'Expiry Date is required';
+                }
+                if (!cvv) {
+                    newErrors.cvv = 'CVV is required';
+                }
+    }
     setErrors(newErrors);
-    setLoading(true);
-    // Simulate an API call or any checkout process
-    setTimeout(() => {
-      setLoading(false);
-      // Handle successful checkout, redirect to order confirmation page, etc.
-    }, 2000);
+    
+    if(Object.keys(newErrors).length === 0){
+        setLoading(true);
+        // Simulate an API call or any checkout process
+        setTimeout(() => {
+        setLoading(false);
+        navigate("/orderSuccessful")
+        // Handle successful checkout, redirect to order confirmation page, etc.
+        }, 2000);
+    }
   };
 
 
@@ -82,9 +92,10 @@ console.log("Items",orderItems);
   return (
     <CustomContainer maxWidth="lg">
       <Paper sx={{ p: 3 }} elevation={3}>
-        <Typography variant="h4" gutterBottom>
+      <Typography variant="h3" className="fw-bold mb-0 text-black" gutterBottom>
           Checkout
         </Typography>
+        <br/>
         <br/>
         <Grid container spacing={3}>
           {/* Display cart items */}
@@ -94,7 +105,7 @@ console.log("Items",orderItems);
 
                             
                               <>
-                                <MDBRow className="mb-4 d-flex justify-content-between align-items-center" style={{width:"100%", marginLeft:"5px"}}>
+                                <MDBRow className="mb-4 d-flex justify-content-between align-items-center" style={{width:"100%", marginLeft:"1%"}}>
                                   <MDBCol md="3" lg="3" xl="3">
                                     <MDBTypography tag="h6" className="text-muted">
                                       Item

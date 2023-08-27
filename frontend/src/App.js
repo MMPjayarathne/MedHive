@@ -10,6 +10,7 @@ import Cart from './pages/ShoppingCart'
 import Store from './pages/Store'
 import SingleProduct from './pages/SingleProduct';
 import Order from './pages/Order.jsx';
+import OrderConfirm from './pages/OrderSuccessful';
 
 const RouterDOM = () => {
   return (
@@ -25,6 +26,7 @@ const RouterDOM = () => {
       <Route path="/store" element={<Store/>}/>
       <Route path="/product" element={<SingleProduct/>}/>
       <Route path="/order" element={<Order/>}/>
+      <Route path='/orderSuccessful' element={<OrderConfirm/>}/>
       
      
       </Routes>
