@@ -8,7 +8,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Cart from './pages/ShoppingCart'
 import Store from './pages/Store'
-import SingleProduct from './pages/SingleProduct'
+import SingleProduct from './pages/SingleProduct';
+import Order from './pages/Order.jsx';
 
 const RouterDOM = () => {
   return (
@@ -23,6 +24,7 @@ const RouterDOM = () => {
       <Route path="/cart" element={<Cart/>}/>
       <Route path="/store" element={<Store/>}/>
       <Route path="/product" element={<SingleProduct/>}/>
+      <Route path="/order" element={<Order/>}/>
       
      
       </Routes>

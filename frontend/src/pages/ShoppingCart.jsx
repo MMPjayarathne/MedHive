@@ -18,6 +18,7 @@ import {
   MDBModalHeader,
   MDBModalFooter,
   } from "mdb-react-ui-kit";
+  import {  Grid, Button,TextField } from '@mui/material';
   import { MDBIcon} from 'mdbreact';
 import { ThreeDots } from 'react-loader-spinner';
 import 'mdb-react-ui-kit/dist/css/mdb.min.css';
@@ -39,6 +40,8 @@ const ShoppingCart = () => {
   const URLquantity = localStorage.getItem('cartProductQuantity');
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
+  const [prescriptionFile, setPrescriptionFile] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -160,6 +163,31 @@ const ShoppingCart = () => {
     }
   };
 
+  //----------functions for prescription------------
+
+  const handleShowPrescriptionForm = () => {
+    setShowPrescriptionForm(true);
+  };
+
+
+
+  const handleBuy = () => {
+    Cookies.set("orders", JSON.stringify(Items), {
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) // Expires after 7 days
+    });
+    // You can add your logic here to handle the buy action with prescription
+    // For example, you can send the prescriptionFile to the server
+    console.log('Buy with prescription', prescriptionFile);
+    navigate("/order")
+  };
+  const [selectedFileName, setSelectedFileName] = useState('');
+
+  const handlePrescriptionFileChange = (event) => {
+    const file = event.target.files[0];
+    setPrescriptionFile(file);
+    setSelectedFileName(file ? file.name : '');
+  };
+
 
  
 
@@ -168,6 +196,7 @@ const ShoppingCart = () => {
   }
 
   const productListLength = Items.productList ? Items.productList.length : 0;
+
 
   return (
   <section className="h-100 h-custom" style={{ backgroundColor: "#eee" }}>
@@ -308,17 +337,39 @@ const ShoppingCart = () => {
                             </div>
                             {
                               Items.needPrescription?(
-                                  <MDBBtn color="dark" block size="lg">
+                                  <MDBBtn color="dark" block size="lg" onClick={handleShowPrescriptionForm}>
                                   Enter the prescription
                                 </MDBBtn>
+                                
 
                               ):(
-                                    <MDBBtn color="dark" block size="lg">
+                                    <MDBBtn color="dark" block size="lg"  onClick={handleBuy}>
                                   Buy
                                 </MDBBtn>
                               )
 
                             }
+                            <br/>
+                             {/* Prescription form */}
+                            {showPrescriptionForm && (
+                              <Grid item xs={12}>
+                                <input
+                                  type="file"
+                                  accept="image/*,.pdf,.doc,.docx"
+                                  onChange={handlePrescriptionFileChange}
+                                />
+                               
+                                <br/><br/>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  disabled={!prescriptionFile}
+                                  onClick={handleBuy}
+                                >
+                                  Buy
+                                </Button>
+                              </Grid>
+                            )}
                             
                           </div>
                         </MDBCol>
