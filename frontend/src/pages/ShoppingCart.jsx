@@ -170,14 +170,12 @@ const ShoppingCart = () => {
   };
 
 
-
   const handleBuy = () => {
     Cookies.set("orders", JSON.stringify(Items), {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) // Expires after 7 days
     });
     // You can add your logic here to handle the buy action with prescription
     // For example, you can send the prescriptionFile to the server
-    console.log('Buy with prescription', prescriptionFile);
     navigate("/order")
   };
   const [selectedFileName, setSelectedFileName] = useState('');

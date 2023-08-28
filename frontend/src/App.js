@@ -11,6 +11,7 @@ import Store from './pages/Store'
 import SingleProduct from './pages/SingleProduct';
 import Order from './pages/Order.jsx';
 import OrderConfirm from './pages/OrderSuccessful';
+import OrderReceived from './pages/OrderReceived';
 
 const RouterDOM = () => {
   return (
@@ -27,6 +28,7 @@ const RouterDOM = () => {
       <Route path="/product" element={<SingleProduct/>}/>
       <Route path="/order" element={<Order/>}/>
       <Route path='/orderSuccessful' element={<OrderConfirm/>}/>
+      <Route path='/orderReceived' element={<OrderReceived/>}/>
       
      
       </Routes>

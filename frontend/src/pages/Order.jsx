@@ -45,6 +45,7 @@ console.log("Items",orderItems);
 
   const handlePlaceOrder = () => {
     const newErrors = {};
+    console.log("in the place order")
 
     if (!name) {
         newErrors.name = 'Name is required';
@@ -60,7 +61,7 @@ console.log("Items",orderItems);
         newErrors.email = 'Email is required';
       }
 
-    if(paymentType === 'credit' || paymentType === 'debit'){
+    if(!orderItems.needPrescription &&( paymentType === 'credit' || paymentType === 'debit') ){
                 if (!cardNumber) {
                     newErrors.cardNumber = 'Card Number is required';
                     console.log("Card number is required")
@@ -79,7 +80,14 @@ console.log("Items",orderItems);
         // Simulate an API call or any checkout process
         setTimeout(() => {
         setLoading(false);
-        navigate("/orderSuccessful")
+        if(orderItems.needPrescription){
+          navigate("/orderReceived")
+
+        }else{
+          navigate("/orderSuccessful")
+
+        }
+        
         // Handle successful checkout, redirect to order confirmation page, etc.
         }, 2000);
     }
@@ -185,88 +193,124 @@ console.log("Items",orderItems);
               onChange={(e) => setEmail(e.target.value)}
             />
           </Grid>
-          {/* Payment Type */}
-          <Grid item xs={12}>
-            <FormControl variant="outlined" fullWidth>
-              <InputLabel>Payment Type</InputLabel>
-              <Select
-                value={paymentType}
-                onChange={(e) => setPaymentType(e.target.value)}
-                label="Payment Type"
-              >
-                <MenuItem value="credit">Credit Card</MenuItem>
-                <MenuItem value="debit">Debit Card</MenuItem>
-                <MenuItem value="handsOn">Hands On Payment</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          {/* Card Details Fields */}
-          {paymentType === 'credit' || paymentType === 'debit' ? (
+
+          {!orderItems.needPrescription?(
             <>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Card Number"
-                  variant="outlined"
-                  id="cardNumber"
-                  fullWidth
-                  value={cardNumber}
-                  autoComplete="cardNumber"
-                helperText={errors.cardNumber}
-                error={!!errors.cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <TextField
-                  label="Expiry Date"
-                  variant="outlined"
-                  id="exDate"
-                  fullWidth
-                  value={expiryDate}
-                  autoComplete="expiryDate"
-                helperText={errors.expiryDate}
-                error={!!errors.expiryDate}
-                  onChange={(e) => setExpiryDate(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} md={3}>
-                <TextField
-                  label="CVV"
-                  variant="outlined"
-                  id="cvv"
-                  fullWidth
-                  value={cvv}
-                  autoComplete="cvv"
-                helperText={errors.cvv}
-                error={!!errors.cvv}
-                  onChange={(e) => setCvv(e.target.value)}
-                />
-              </Grid>
-            </>
-          ) : null}
-          {/* Total Amount */}
+             {/* Payment Type */}
+          <Grid item xs={12}>
+          <FormControl variant="outlined" fullWidth>
+            <InputLabel>Payment Type</InputLabel>
+            <Select
+              value={paymentType}
+              onChange={(e) => setPaymentType(e.target.value)}
+              label="Payment Type"
+            >
+              <MenuItem value="credit">Credit Card</MenuItem>
+              <MenuItem value="debit">Debit Card</MenuItem>
+              <MenuItem value="handsOn">Hands On Payment</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        {/* Card Details Fields */}
+        {paymentType === 'credit' || paymentType === 'debit' ? (
+            
+          <>
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Card Number"
+                variant="outlined"
+                id="cardNumber"
+                fullWidth
+                value={cardNumber}
+                autoComplete="cardNumber"
+              helperText={errors.cardNumber}
+              error={!!errors.cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="Expiry Date"
+                variant="outlined"
+                id="exDate"
+                fullWidth
+                value={expiryDate}
+                autoComplete="expiryDate"
+              helperText={errors.expiryDate}
+              error={!!errors.expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <TextField
+                label="CVV"
+                variant="outlined"
+                id="cvv"
+                fullWidth
+                value={cvv}
+                autoComplete="cvv"
+              helperText={errors.cvv}
+              error={!!errors.cvv}
+                onChange={(e) => setCvv(e.target.value)}
+              />
+            </Grid>
+            {/* Total Amount */}
           <Grid item xs={12}>
             <Typography variant="h6">
               Total Amount: Rs {orderItems.totalPrice} /=
             </Typography>
           </Grid>
-          {/* Place Order Button */}
-          <Grid item xs={12} >
+         
+          </>
+        ) : null}
+         {/* Place Order Button */}
+         <Grid item xs={12} >
 
-          <MDBCardText tag="a" href="/cart" className="text-body">
-                <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back to cart
-            </MDBCardText>
+            <MDBCardText tag="a" href="/cart" className="text-body">
+                  <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back to cart
+              </MDBCardText>
 
-            <Button
-              variant="contained"
-              color="primary"
-              style={{float:"right"}}
-              onClick={handlePlaceOrder}
-              disabled={loading}
-            >
-              {loading ? <ThreeDots color="#FFF" height={20} width={20} /> : 'Place Order'}
-            </Button>
-          </Grid>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{float:"right"}}
+                onClick={handlePlaceOrder}
+                disabled={loading}
+              >
+                {loading ? <ThreeDots color="#FFF" height={20} width={20} /> : 'Place Order'}
+              </Button>
+            </Grid>
+        </>
+          ):(
+            <>
+            {/* Total Amount */}
+          <Grid item xs={12}>
+          <Typography variant="h6">
+            Total Amount: Rs {orderItems.totalPrice} /=
+          </Typography>
+        </Grid>
+        {/* Place Order Button */}
+        <Grid item xs={12} >
+
+        <MDBCardText tag="a" href="/cart" className="text-body">
+              <MDBIcon fas icon="long-arrow-alt-left me-2" /> Back to cart
+          </MDBCardText>
+
+          <Button
+            variant="contained"
+            color="primary"
+            style={{float:"right"}}
+            onClick={handlePlaceOrder}
+            disabled={loading}
+          >
+            {loading ? <ThreeDots color="#FFF" height={20} width={20} /> : 'Place Order'}
+          </Button>
+        </Grid>
+        </>
+
+          )}
+         
+          
         </Grid>
       </Paper>
       <br></br>

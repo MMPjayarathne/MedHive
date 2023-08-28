@@ -90,7 +90,7 @@ const store = async(req,res)=>{
             console.log("Hello")
             const totalPrice = cart.TotalPrice || 0;
             let newTotal = totalPrice + product.Price * quantity;
-            const noOfNONOTC = needPrescription? cart.NoOfNONOTC + 1 : cart.NoOfNONOTC;
+            const noOfNONOTC = needPrescription? cart.NoOfNONOTC + quantity : cart.NoOfNONOTC;
             const existingCartItemsIds = cart.CartItems;
            // const existingCartItems = await CartItems.findById(existingCartItemsId);
            for (const cartItemId of existingCartItemsIds) {
@@ -168,10 +168,11 @@ const store = async(req,res)=>{
         else{
             console.log("in else")
             try{
-                const noOfNONOTC = needPrescription? 1: 0;
+               
                
                 const product = await Product.findById(productId);
                 const total =  quantity * product.Price; 
+                const noOfNONOTC = needPrescription? quantity: 0;
 
                 let cartItems = new CartItems({
                     Product:productId,
