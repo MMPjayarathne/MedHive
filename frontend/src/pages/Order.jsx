@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { Container, Grid, Paper, Typography, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { styled } from '@mui/system';
 import {
@@ -17,6 +18,7 @@ import {
 import { MDBIcon} from 'mdbreact';
 import { ThreeDots } from 'react-loader-spinner';
 import Cookies from 'js-cookie';
+import { usePrescriptionContext } from './helpers/PrescriptionContext';
 
 const CustomContainer = styled(Container)({
   paddingTop: '60px',
@@ -38,12 +40,16 @@ const CheckoutPage = () => {
   const [errors, setErrors] = useState({});
   const [fieldError,setFieldError] = useState("")
   const navigate = useNavigate();
-
+  const { prescriptionFile } = usePrescriptionContext();
+  const [payed,setPayed] = useState(false);
+  const isCart = localStorage.getItem("isCart");
+  
   const cartItems = []; // Replace with your actual cart items
   const totalAmount = 0; // Replace with your actual total amount
 console.log("Items",orderItems);
+console.log("prescription: ",prescriptionFile);
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     const newErrors = {};
     console.log("in the place order")
 
@@ -76,20 +82,56 @@ console.log("Items",orderItems);
     setErrors(newErrors);
     
     if(Object.keys(newErrors).length === 0){
+      if(cardNumber && cvv && expiryDate){
+        setPayed(true);
+      }
         setLoading(true);
         // Simulate an API call or any checkout process
-        setTimeout(() => {
-        setLoading(false);
-        if(orderItems.needPrescription){
-          navigate("/orderReceived")
 
-        }else{
-          navigate("/orderSuccessful")
+        try {
 
+          const formData = new FormData();
+          formData.append('order', JSON.stringify(orderItems));
+          formData.append('name', name);
+          formData.append('email', email);
+          formData.append('address', address);
+          formData.append('phone', phone);
+          formData.append('payed', payed);
+          formData.append('isCart', isCart);
+          formData.append('prescription1', prescriptionFile); 
+
+          const response = await axios.post('http://localhost:8080/api/v1/order', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          console.log("done")
+    
+          if (response.status === 200) {
+            setTimeout(() => {
+              setLoading(false);
+              if(orderItems.needPrescription){
+                navigate("/orderReceived")
+      
+              }else{
+                navigate("/orderSuccessful")
+      
+              }
+              
+              // Handle successful checkout, redirect to order confirmation page, etc.
+              }, 2000);
+          } else {
+            console.log('There is an error in ordering',response.message);
+            setLoading(false);
+            return false;
+          }
+        } catch (error) {
+          console.error('Error ordering:', error);
+          setLoading(false);
+          return false;
         }
-        
-        // Handle successful checkout, redirect to order confirmation page, etc.
-        }, 2000);
+      
     }
   };
 

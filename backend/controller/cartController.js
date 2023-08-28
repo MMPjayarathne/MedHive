@@ -26,6 +26,7 @@ const getCartByUserId = async (req, res) => {
 
                     temporaryList.push({
                         cartItemId: cartItemId,
+                        productId : cartItem.Product,
                         name: product.Name,
                         quantity: cartItem.Quantity,
                         price: product.Price,

@@ -28,6 +28,7 @@ import SignIn from './SignIn';
 import './pageStyles/ShoppingCart.css';
 import Swal from 'sweetalert2';
 import { position } from '@chakra-ui/react';
+import { usePrescriptionContext } from './helpers/PrescriptionContext';
 
 const ShoppingCart = () => {
   const location = useLocation();
@@ -41,7 +42,8 @@ const ShoppingCart = () => {
   const navigate = useNavigate();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
-  const [prescriptionFile, setPrescriptionFile] = useState(null);
+  const [prescription, setPrescription] = useState(null);
+  const { setPrescriptionFile } = usePrescriptionContext();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -174,6 +176,7 @@ const ShoppingCart = () => {
     Cookies.set("orders", JSON.stringify(Items), {
       expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) // Expires after 7 days
     });
+    localStorage.setItem("isCart",true);
     // You can add your logic here to handle the buy action with prescription
     // For example, you can send the prescriptionFile to the server
     navigate("/order")
@@ -183,6 +186,7 @@ const ShoppingCart = () => {
   const handlePrescriptionFileChange = (event) => {
     const file = event.target.files[0];
     setPrescriptionFile(file);
+    setPrescription(file);
     setSelectedFileName(file ? file.name : '');
   };
 
@@ -361,7 +365,7 @@ const ShoppingCart = () => {
                                 <Button
                                   variant="contained"
                                   color="primary"
-                                  disabled={!prescriptionFile}
+                                  disabled={!prescription}
                                   onClick={handleBuy}
                                 >
                                   Buy

@@ -20,6 +20,7 @@ const productsRouter = require('./routers/products');
 const categoriesRouter = require('./routers/categories');
 const usersRouter = require('./routers/users');
 const cartRouter = require('./routers/cart');
+const orderRouter = require('./routers/orders');
 
 
 
@@ -37,6 +38,7 @@ app.use(`${api}/products`,productsRouter)
 app.use(`${api}/category`,categoriesRouter)
 app.use(`${api}/user`,usersRouter)
 app.use(`${api}/cart`,cartRouter)
+app.use(`${api}/order`,orderRouter)
 
 
 
