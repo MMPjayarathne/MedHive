@@ -8,6 +8,8 @@ import { ThreeDots } from 'react-loader-spinner';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import RatingStars from '../components/RatingStars';
+import { useNavigate } from 'react-router-dom';
+import { usePrescriptionContext } from './helpers/PrescriptionContext';
 
 const ProductImage = styled('img')({
   maxWidth: '100%',
@@ -28,12 +30,14 @@ const ProductPage = () => {
     const [loading, setLoading] = useState(true); // Add a loading state
     const location = useLocation();
     const [quantity, setQuantity] = useState(1); 
+    const navigate = useNavigate();
     const defaultProductId = "64bc2c3f647893e862894de3";
     const URLproductId = new URLSearchParams(location.search).get("productId");
     const [token] = useState(Cookies.get('token') || '');
     const productId = URLproductId || defaultProductId
     const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
-    const [prescriptionFile, setPrescriptionFile] = useState(null);
+    const [prescription, setPrescription] = useState(null);
+    const { setPrescriptionFile } = usePrescriptionContext();
     console.log(productId);
 
     const handleAddToCart = async (item,quantity) =>{
@@ -102,17 +106,40 @@ const ProductPage = () => {
       setShowPrescriptionForm(true);
     };
   
-    const handleBuyWithPrescription = () => {
-      // You can add your logic here to handle the buy action with prescription
-      // For example, you can send the prescriptionFile to the server
-      console.log('Buy with prescription', prescriptionFile);
-    };
+    // const handleBuyWithPrescription = () => {
+    //   // You can add your logic here to handle the buy action with prescription
+    //   // For example, you can send the prescriptionFile to the server
+    //   //console.log('Buy with prescription', prescriptionFile);
+    // };
     const [selectedFileName, setSelectedFileName] = useState('');
 
-    const handlePrescriptionFileChange = (event) => {
-      const file = event.target.files[0];
-      setPrescriptionFile(file);
-      setSelectedFileName(file ? file.name : '');
+  const handlePrescriptionFileChange = (event) => {
+    const file = event.target.files[0];
+    setPrescriptionFile(file);
+    setPrescription(file);
+    setSelectedFileName(file ? file.name : '');
+  };
+    const handleBuy = ()=>{
+
+      const needPrescription = prescription?true:false;
+
+      const order = {
+        needPrescription: needPrescription,
+        productList : [{
+          image: product.Image1,
+          name: product.Name,
+          price: product.Price,
+          productId:product._id,
+          quantity: quantity,
+        }],
+        totalPrice: product.Price * quantity
+      };
+      Cookies.set("orders", JSON.stringify(order), {
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000) // Expires after 7 days
+      });
+      localStorage.setItem("isCart",false);
+      navigate("/order")
+
     };
   
     
@@ -202,7 +229,7 @@ const ProductPage = () => {
                     </Button>
                   </Grid>
                   <Grid item>
-                  <Button variant="contained" color="primary">
+                  <Button variant="contained" color="primary" onClick={handleBuy}>
                       Buy
                     </Button>
                     </Grid>
@@ -242,7 +269,8 @@ const ProductPage = () => {
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleBuyWithPrescription}
+                  disabled={!prescription}
+                  onClick={handleBuy}
                 >
                   Buy
                 </Button>

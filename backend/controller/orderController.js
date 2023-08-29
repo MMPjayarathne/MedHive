@@ -110,7 +110,6 @@ const store = async(req,res)=>{
               )  
 
         }
-
        // console.log("OrderItemList: ",tempList);
 
         orders.OrderItems = tempList;
@@ -129,7 +128,7 @@ const store = async(req,res)=>{
 
 
       orders = await orders.save();
-      console.log("hello made step 4");
+      console.log(orders);
 
       if(!orders){
         return res.status(500).send("error is save the orders");
@@ -168,7 +167,7 @@ const store = async(req,res)=>{
            }
           
         }
-        return res.status(200).send("successfully save the orders");
+        return res.status(200).send(orders);
 
       }else{
 
@@ -186,7 +185,7 @@ const store = async(req,res)=>{
               return res.status(500).send('Error updating product quantity');
 
             }
-            return res.status(200).send("successfully save the orders");
+            return res.status(200).send(orders);
 
         }
 

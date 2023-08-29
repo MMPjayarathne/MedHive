@@ -41,7 +41,7 @@ const CheckoutPage = () => {
   const [fieldError,setFieldError] = useState("")
   const navigate = useNavigate();
   const { prescriptionFile } = usePrescriptionContext();
-  const [payed,setPayed] = useState(false);
+ // const [payed,setPayed] = useState(false);
   const isCart = localStorage.getItem("isCart");
   
   const cartItems = []; // Replace with your actual cart items
@@ -82,10 +82,20 @@ console.log("prescription: ",prescriptionFile);
     setErrors(newErrors);
     
     if(Object.keys(newErrors).length === 0){
-      if(cardNumber && cvv && expiryDate){
-        setPayed(true);
+
+      // console.log(cardNumber);
+      // console.log(cvv);
+      // console.log(expiryDate);
+
+      const payed = cardNumber && cvv && expiryDate ? true : false;
+      console.log(payed)
+      if(!orderItems.needPrescription){
+        let prescriptionFile = null;
       }
-        setLoading(true);
+      if(!isCart){
+        //orderItems
+      }
+      setLoading(true);
         // Simulate an API call or any checkout process
 
         try {
@@ -107,6 +117,8 @@ console.log("prescription: ",prescriptionFile);
             },
           });
           console.log("done")
+          //console.log(response)
+          localStorage.setItem("orderResponse",JSON.stringify(response.data));
     
           if (response.status === 200) {
             setTimeout(() => {

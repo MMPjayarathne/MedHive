@@ -11,6 +11,8 @@ const CustomContainer = styled(Container)({
   });
 
 const orderSuccessful = () => {
+    const order = JSON.parse(localStorage.getItem("orderResponse"));
+   // console.log(order);
 
 
 
@@ -48,9 +50,9 @@ const orderSuccessful = () => {
                 We will notify through a email you when the order is sent.
             </Typography>
             <Typography variant="text" className="mb-4 text-black" style={{ textAlign: "center" }}>
-                Name: Masith Pramuditha <br/>
-                Order Id: 324354657645343 <br/>
-                Date: 23rd March 2023
+                Name: {order.Name}<br/>
+                Order Id: {order._id} <br/>
+                Date: {order.OrderedDate}
             </Typography>
             <Typography variant="h6" className="text-black" style={{ textAlign: "center" }}>
             Thank you for choosing MED<span style={{color: "#FFB800"}}>HIVE</span> for your healthcare needs. Our team is dedicated to providing you with the best service and products.
