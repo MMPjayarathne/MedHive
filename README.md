@@ -1,6 +1,5 @@
 # Project-MedHive
-A demo online pharmacy 
-Used technologies
-  *ReactJs
-  *NodeJs
-  *MongoDB
+
+An online pharmacy web application that helps to buy both over-the-counter and prescription medicines.  The application is developed focusing on the MERN stack. Has token-based user authentication and cart functionality to help the customers.
+
+
