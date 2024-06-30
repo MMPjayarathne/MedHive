@@ -5,10 +5,15 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 
 
-const getAllUsers = async(req,res)=>{
+const getAllUsers = async (req, res) => {
+  try {
     const userList = await User.find().select('-PasswordHash');
-    res.send(userList)
-}
+    res.send(userList);
+  } catch (error) {
+    res.status(500).send('Server Error!');
+  }
+};
+
 
 const store = async (req, res) => {
     try {
