@@ -226,7 +226,7 @@ export default function SignInSide() {
           localStorage.setItem('email', response.data.email); // Corrected this line
           localStorage.setItem('name', response.data.name);
           localStorage.setItem('id', response.data.id);
-          localStorage.setItem('isAdmin', response.data.isAdmin);
+          //localStorage.setItem('isAdmin', response.data.isAdmin);
           navigate('/home');
         }
         console.log(email)

@@ -10,6 +10,7 @@ import styled from "styled-components";
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import {isAdmin} from '../utils/handleToken';
 
 const Button = styled(Link)`
   
@@ -36,7 +37,7 @@ const Navbar = () => {
   const [Products, setProducts] = useState([]);
   const name = localStorage.getItem('name');
   const id = localStorage.getItem('id');
-  const isAdmin = localStorage.getItem('isAdmin');
+  const isUserAdmin = isAdmin();
   const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
@@ -100,7 +101,7 @@ const Navbar = () => {
   };
   const handleAdminClick = () => {
     // Perform any necessary actions before redirecting
-    window.location.href = "../home";
+    window.location.href = "../admin";
   };
 
 
@@ -182,7 +183,7 @@ const Navbar = () => {
     {token ? (
               <>
               {
-                isAdmin=="true"?(
+                isUserAdmin ==="true"?(
                     <ListItem button onClick={handleLoginClick}>
                     <ListItemText primary= "Admin Dashboard"/>
                     </ListItem>
@@ -285,7 +286,7 @@ const Navbar = () => {
                     {token ? (
                         <>
                         {
-                            isAdmin === "true" ?(
+                            isUserAdmin == true ?(
                                 <Typography variant="body1" sx={{ mx: 1 , mr:2}} >
                                 <Button onClick={handleAdminClick}>
                                 Admin Dashboard
@@ -328,7 +329,7 @@ const Navbar = () => {
 
                 {
                     
-                    isAdmin=="false"?(
+                    isUserAdmin== false?(
                         <>
                         <IconButton color="inherit" sx={{ mx: 2 }}>
                             <Badge badgeContent={productListLength} color="error">

@@ -11,12 +11,11 @@ import React, { useEffect, useState } from 'react';
 import { slidesData } from "../components/SlidesData";
 import { useNavigate } from 'react-router-dom';
 
+
 const Home = () => {
-
   const [errors, setErrors] = useState({});
-  const [fieldError,setFieldError] = useState("");;
+  const [fieldError,setFieldError] = useState("");
   const navigate = useNavigate();
-
   const [Items, setItems] = useState([]);
   useEffect(() => {
     const fetchItems = async () => {
