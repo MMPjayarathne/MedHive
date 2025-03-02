@@ -2,8 +2,8 @@
 
 MedHive is an online pharmacy web application designed to simplify the process of purchasing both over-the-counter (OTC) and prescription medications. Built on the MERN stack (MongoDB, Express, React, Node.js), MedHive provides a seamless user experience with secure, token-based user authentication and a comprehensive cart system to streamline the shopping process. Users can browse, search, and add items to their cart, as well as manage their accounts, track orders, and access information about medications. MedHive aims to offer a convenient, reliable, and user-friendly solution for online medication purchases.
 
+![logo (1)](https://github.com/user-attachments/assets/5914acf9-73af-4755-ab4f-e0300d553693)
 
-![Logo](Screenshots/logo.png)
 
 ## Technologies Used
 - **Frontend**: React.js
